@@ -1,13 +1,77 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Home, Mail, Lock, User, Phone } from 'lucide-react';
+import { Home, Mail, Lock, User, Phone } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { toast } from "sonner";
+
+interface UserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 
 const SignupPage = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<UserData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: ''
+  });
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validação básica
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password) {
+      toast.error("Por favor, preencha todos os campos");
+      return;
+    }
+    
+    if (formData.password !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+    
+    if (!termsAccepted) {
+      toast.error("Você precisa aceitar os termos de uso");
+      return;
+    }
+    
+    // Verificar se o email já foi registrado
+    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+    const userExists = existingUsers.some((user: UserData) => user.email === formData.email);
+    
+    if (userExists) {
+      toast.error("Este email já está cadastrado");
+      return;
+    }
+    
+    // Salvar usuário no localStorage
+    const updatedUsers = [...existingUsers, formData];
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    
+    toast.success("Cadastro realizado com sucesso!");
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -39,123 +103,139 @@ const SignupPage = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 text-senior">
-                    Nome
-                  </label>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                      <User className="h-5 w-5" />
-                    </span>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 text-senior">
+                      Nome
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <User className="h-5 w-5" />
+                      </span>
+                      <Input 
+                        id="firstName" 
+                        placeholder="Seu nome" 
+                        className="pl-10 text-senior h-12" 
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 text-senior">
+                      Sobrenome
+                    </label>
                     <Input 
-                      id="firstName" 
-                      placeholder="Seu nome" 
-                      className="pl-10 text-senior h-12" 
+                      id="lastName" 
+                      placeholder="Seu sobrenome" 
+                      className="text-senior h-12"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 text-senior">
-                    Sobrenome
-                  </label>
-                  <Input 
-                    id="lastName" 
-                    placeholder="Seu sobrenome" 
-                    className="text-senior h-12" 
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-senior">
-                  Email
-                </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <Mail className="h-5 w-5" />
-                  </span>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="seu@email.com" 
-                    className="pl-10 text-senior h-12" 
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 text-senior">
-                  Telefone
-                </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <Phone className="h-5 w-5" />
-                  </span>
-                  <Input 
-                    id="phone" 
-                    type="tel" 
-                    placeholder="(00) 00000-0000" 
-                    className="pl-10 text-senior h-12" 
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-senior">
-                    Senha
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-senior">
+                    Email
                   </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                      <Lock className="h-5 w-5" />
+                      <Mail className="h-5 w-5" />
                     </span>
                     <Input 
-                      id="password" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      className="pl-10 text-senior h-12" 
+                      id="email" 
+                      type="email" 
+                      placeholder="seu@email.com" 
+                      className="pl-10 text-senior h-12"
+                      value={formData.email}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 text-senior">
-                    Confirmar Senha
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 text-senior">
+                    Telefone
                   </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                      <Lock className="h-5 w-5" />
+                      <Phone className="h-5 w-5" />
                     </span>
                     <Input 
-                      id="confirmPassword" 
-                      type="password" 
-                      placeholder="••••••••" 
-                      className="pl-10 text-senior h-12" 
+                      id="phone" 
+                      type="tel" 
+                      placeholder="(00) 00000-0000" 
+                      className="pl-10 text-senior h-12"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="flex items-center h-5">
-                  <input
-                    id="terms"
-                    type="checkbox"
-                    className="w-5 h-5 border border-gray-300 rounded"
-                  />
+                
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-senior">
+                      Senha
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <Lock className="h-5 w-5" />
+                      </span>
+                      <Input 
+                        id="password" 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="pl-10 text-senior h-12"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 text-senior">
+                      Confirmar Senha
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <Lock className="h-5 w-5" />
+                      </span>
+                      <Input 
+                        id="confirmPassword" 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="pl-10 text-senior h-12"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="ml-3 text-gray-600 text-senior">
-                  <label htmlFor="terms" className="cursor-pointer">
-                    Li e concordo com os <Link to="/terms" className="text-care-teal hover:underline">Termos de Uso</Link> e <Link to="/privacy" className="text-care-teal hover:underline">Política de Privacidade</Link>
-                  </label>
+                
+                <div className="flex items-start">
+                  <div className="flex items-center h-5">
+                    <input
+                      id="terms"
+                      type="checkbox"
+                      className="w-5 h-5 border border-gray-300 rounded"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                    />
+                  </div>
+                  <div className="ml-3 text-gray-600 text-senior">
+                    <label htmlFor="terms" className="cursor-pointer">
+                      Li e concordo com os <Link to="/terms" className="text-care-teal hover:underline">Termos de Uso</Link> e <Link to="/privacy" className="text-care-teal hover:underline">Política de Privacidade</Link>
+                    </label>
+                  </div>
                 </div>
-              </div>
-              
-              <Button className="w-full h-12 text-senior bg-care-teal hover:bg-care-dark-teal">
-                Cadastrar
-              </Button>
+                
+                <Button type="submit" className="w-full h-12 text-senior bg-care-teal hover:bg-care-dark-teal">
+                  Cadastrar
+                </Button>
+              </form>
               
               <div className="text-center">
                 <span className="text-gray-500 text-senior">ou</span>

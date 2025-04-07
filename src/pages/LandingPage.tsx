@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowRight, Calendar, Clock, Ambulance, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Calendar, Clock, Ambulance } from 'lucide-react';
 import Logo from '@/components/Logo';
 
 const LandingPage = () => {
@@ -17,24 +16,18 @@ const LandingPage = () => {
           <span className="text-xs text-gray-500 ml-2 hidden md:block">Cuidando de quem cuidou</span>
         </div>
         
-        <nav className="hidden md:flex items-center space-x-8 text-senior">
-          <Link to="/" className="text-care-purple font-medium">Home</Link>
-          <Link to="/services" className="text-gray-700 hover:text-care-teal">Serviços</Link>
-          <Link to="/about" className="text-gray-700 hover:text-care-teal">Sobre Nós</Link>
-          <Link to="/doctors" className="text-gray-700 hover:text-care-teal">Profissionais</Link>
-          <Link to="/appointments" className="text-gray-700 hover:text-care-teal">Consultas</Link>
-          <Link to="/contact" className="text-gray-700 hover:text-care-teal">Contato</Link>
-        </nav>
-        
-        <Link to="/appointment">
-          <Button className="hidden md:flex bg-care-teal hover:bg-care-dark-teal">
-            Agendar Consulta <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
-        
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Calendar className="h-6 w-6" />
-        </Button>
+        <div className="flex items-center gap-4">
+          <Link to="/login">
+            <Button variant="outline" className="border-care-teal text-care-teal hover:bg-care-teal/10">
+              Login
+            </Button>
+          </Link>
+          <Link to="/signup">
+            <Button className="bg-care-teal hover:bg-care-dark-teal">
+              Cadastro
+            </Button>
+          </Link>
+        </div>
       </header>
       
       {/* Hero Section */}

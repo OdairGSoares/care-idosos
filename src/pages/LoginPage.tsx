@@ -1,13 +1,57 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { Home, Mail, Lock, User } from 'lucide-react';
 import Logo from '@/components/Logo';
+import { toast } from "sonner";
+
+interface UserData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validação básica
+    if (!email || !password) {
+      toast.error("Por favor, preencha todos os campos");
+      return;
+    }
+    
+    // Verificar credenciais no localStorage
+    const users: UserData[] = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(user => user.email === email && user.password === password);
+    
+    if (!user) {
+      toast.error("Email ou senha incorretos");
+      return;
+    }
+    
+    // Salvar sessão do usuário
+    localStorage.setItem('currentUser', JSON.stringify({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone,
+      isLoggedIn: true
+    }));
+    
+    toast.success("Login realizado com sucesso!");
+    navigate('/dashboard');
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -39,48 +83,56 @@ const LoginPage = () => {
             </CardHeader>
             
             <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-senior">
-                  Email
-                </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <Mail className="h-5 w-5" />
-                  </span>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="seu@email.com" 
-                    className="pl-10 text-senior h-12"
-                  />
+              <form onSubmit={handleLogin}>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-senior">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <Mail className="h-5 w-5" />
+                      </span>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="seu@email.com" 
+                        className="pl-10 text-senior h-12"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-senior">
+                        Senha
+                      </label>
+                      <Link to="/forgot-password" className="text-sm text-care-teal hover:text-care-dark-teal text-senior">
+                        Esqueceu a senha?
+                      </Link>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <Lock className="h-5 w-5" />
+                      </span>
+                      <Input 
+                        id="password" 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="pl-10 text-senior h-12"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <Button type="submit" className="w-full h-12 text-senior bg-care-teal hover:bg-care-dark-teal">
+                    Entrar
+                  </Button>
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-senior">
-                    Senha
-                  </label>
-                  <Link to="/forgot-password" className="text-sm text-care-teal hover:text-care-dark-teal text-senior">
-                    Esqueceu a senha?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <Lock className="h-5 w-5" />
-                  </span>
-                  <Input 
-                    id="password" 
-                    type="password" 
-                    placeholder="••••••••" 
-                    className="pl-10 text-senior h-12" 
-                  />
-                </div>
-              </div>
-              
-              <Button className="w-full h-12 text-senior bg-care-teal hover:bg-care-dark-teal">
-                Entrar
-              </Button>
+              </form>
               
               <div className="text-center">
                 <span className="text-gray-500 text-senior">ou</span>
