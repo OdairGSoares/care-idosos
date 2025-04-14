@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Star } from 'lucide-react';
+import { Edit, Trash2, Star, PhoneCall } from 'lucide-react';
 import { EmergencyContact } from '@/utils/emergencyContactsUtils';
 
 interface EmergencyContactListProps {
@@ -13,6 +13,11 @@ interface EmergencyContactListProps {
 }
 
 const EmergencyContactList = ({ contacts, onEdit, onDelete }: EmergencyContactListProps) => {
+  // Function to handle calling a contact
+  const handleCall = (phoneNumber: string) => {
+    window.location.href = `tel:${phoneNumber}`;
+  };
+
   if (contacts.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center border rounded-md bg-muted/20">
@@ -57,6 +62,16 @@ const EmergencyContactList = ({ contacts, onEdit, onDelete }: EmergencyContactLi
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => handleCall(contact.phone)}
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                    title="Ligar para contato"
+                  >
+                    <PhoneCall className="h-4 w-4" />
+                    <span className="sr-only">Ligar</span>
+                  </Button>
                   <Button
                     variant="outline"
                     size="icon"
