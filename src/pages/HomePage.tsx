@@ -1,15 +1,66 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
 import MedicationReminder from '@/components/MedicationReminder';
 import AppointmentCard from '@/components/AppointmentCard';
 import LocationTracker from '@/components/LocationTracker';
+import { getAppointments, confirmAppointment, Appointment } from '@/utils/appointmentUtils';
+import { toast } from 'sonner';
 
 const HomePage = () => {
   // Sample user data
   const user = {
     name: "Maria Silva",
+  };
+  
+  const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
+  
+  // Fetch the next appointment on component mount
+  useEffect(() => {
+    loadNextAppointment();
+  }, []);
+  
+  // Load the next upcoming appointment
+  const loadNextAppointment = () => {
+    const appointments = getAppointments();
+    
+    // Filter for upcoming appointments only
+    const upcomingAppointments = appointments.filter(app => {
+      const appointmentDate = new Date(`${app.date}T${app.time}`);
+      return appointmentDate >= new Date();
+    });
+    
+    // Sort by date (earliest first) and get the first one
+    if (upcomingAppointments.length > 0) {
+      const sortedAppointments = upcomingAppointments.sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time}`);
+        const dateB = new Date(`${b.date}T${b.time}`);
+        return dateA.getTime() - dateB.getTime();
+      });
+      
+      setNextAppointment(sortedAppointments[0]);
+    } else {
+      setNextAppointment(null);
+    }
+  };
+  
+  // Handle confirming appointment
+  const handleConfirmAppointment = (id: number) => {
+    const success = confirmAppointment(id);
+    
+    if (success) {
+      toast.success("Presença confirmada com sucesso!");
+      loadNextAppointment(); // Refresh appointment data
+    } else {
+      toast.error("Erro ao confirmar presença. Tente novamente.");
+    }
+  };
+  
+  // Handle reschedule click (redirect to appointments page)
+  const handleRescheduleClick = (appointment: Appointment) => {
+    // For now we'll just navigate to the appointments page
+    window.location.href = '/dashboard/appointments';
   };
 
   return (
@@ -27,7 +78,11 @@ const HomePage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <MedicationReminder />
         <div className="space-y-6">
-          <AppointmentCard />
+          <AppointmentCard 
+            appointment={nextAppointment}
+            onReschedule={handleRescheduleClick}
+            onConfirm={handleConfirmAppointment}
+          />
           <LocationTracker />
         </div>
       </div>
