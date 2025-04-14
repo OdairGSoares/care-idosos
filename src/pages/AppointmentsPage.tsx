@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import AppointmentCard from '@/components/AppointmentCard';
 import AppointmentsList from '@/components/AppointmentsList';
 import AppointmentScheduler from '@/components/AppointmentScheduler';
-import { Appointment, getAppointments } from '@/utils/appointmentUtils';
+import { Appointment, getAppointments, confirmAppointment } from '@/utils/appointmentUtils';
+import { toast } from 'sonner';
 
 const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -43,6 +44,25 @@ const AppointmentsPage = () => {
         return dateA.getTime() - dateB.getTime();
       })[0]
     : null;
+
+  // Handle confirming appointment from card
+  const handleConfirmAppointment = (id: number) => {
+    const success = confirmAppointment(id);
+    
+    if (success) {
+      toast.success("Presença confirmada com sucesso!");
+      loadAppointments();
+    } else {
+      toast.error("Erro ao confirmar presença. Tente novamente.");
+    }
+  };
+
+  // Handle rescheduling from card
+  const handleRescheduleClick = (appointment: Appointment) => {
+    // We'll reuse the same scheduler with different initial values in the future
+    // For now, just open the reschedule dialog in the list
+    setActiveTab("upcoming");
+  };
   
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">
@@ -61,11 +81,13 @@ const AppointmentsPage = () => {
       </div>
       
       {/* Show next appointment card if available */}
-      {nextAppointment && (
-        <div className="mb-6">
-          <AppointmentCard />
-        </div>
-      )}
+      <div className="mb-6">
+        <AppointmentCard 
+          appointment={nextAppointment}
+          onReschedule={handleRescheduleClick}
+          onConfirm={handleConfirmAppointment}
+        />
+      </div>
       
       <Tabs 
         value={activeTab} 

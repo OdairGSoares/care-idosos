@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, Clock, MapPin, Check, Calendar as CalendarIcon, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, Check, Calendar as CalendarIcon, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +13,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Calendar as UICalendar } from '@/components/ui/calendar';
 import {
   Select,
@@ -25,7 +35,8 @@ import {
   Appointment, 
   getAvailableTimeSlots, 
   rescheduleAppointment, 
-  confirmAppointment 
+  confirmAppointment,
+  cancelAppointment
 } from '@/utils/appointmentUtils';
 
 interface AppointmentsListProps {
@@ -35,6 +46,7 @@ interface AppointmentsListProps {
 
 const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpdate }) => {
   const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [newDate, setNewDate] = useState<Date | undefined>(undefined);
   const [newTime, setNewTime] = useState<string>("");
@@ -52,6 +64,12 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
     // Get available time slots for this date
     const timeSlots = getAvailableTimeSlots(appointmentDate);
     setAvailableTimeSlots(timeSlots);
+  };
+
+  // Handle opening the cancel dialog
+  const handleCancelClick = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setCancelDialogOpen(true);
   };
   
   // Handle date selection for rescheduling
@@ -84,6 +102,24 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
       onUpdate();
     } else {
       toast.error("Erro ao reagendar consulta. Tente novamente.");
+    }
+  };
+
+  // Handle appointment cancellation
+  const handleCancelConfirm = () => {
+    if (!selectedAppointment) {
+      toast.error("Erro ao identificar a consulta.");
+      return;
+    }
+    
+    const success = cancelAppointment(selectedAppointment.id);
+    
+    if (success) {
+      toast.success("Consulta cancelada com sucesso!");
+      setCancelDialogOpen(false);
+      onUpdate();
+    } else {
+      toast.error("Erro ao cancelar consulta. Tente novamente.");
     }
   };
   
@@ -162,12 +198,30 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
                       <Check className="h-4 w-4 mr-1" />
                       Confirmar Presença
                     </Button>
+                    <Button
+                      variant="outline"
+                      className="border-red-500 text-red-500 hover:bg-red-50"
+                      onClick={() => handleCancelClick(appointment)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Cancelar
+                    </Button>
                   </>
                 ) : (
-                  <div className="flex items-center justify-center p-2 bg-green-100 text-green-600 rounded-md">
-                    <Check className="h-5 w-5 mr-2" />
-                    <span>Presença Confirmada</span>
-                  </div>
+                  <>
+                    <div className="flex items-center justify-center p-2 bg-green-100 text-green-600 rounded-md">
+                      <Check className="h-5 w-5 mr-2" />
+                      <span>Presença Confirmada</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="border-red-500 text-red-500 hover:bg-red-50"
+                      onClick={() => handleCancelClick(appointment)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Cancelar
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -206,7 +260,7 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
                   date.getDay() === 6    // Disable Saturdays
                 }
                 locale={ptBR}
-                className="border rounded-md p-3"
+                className="border rounded-md p-3 pointer-events-auto"
               />
             </div>
             
@@ -259,6 +313,28 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Cancel Appointment Dialog */}
+      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancelar Consulta</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja cancelar esta consulta? Esta ação não poderá ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleCancelConfirm}
+              className="bg-red-500 text-white hover:bg-red-600"
+            >
+              <Trash2 className="h-4 w-4 mr-1" />
+              Confirmar Cancelamento
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

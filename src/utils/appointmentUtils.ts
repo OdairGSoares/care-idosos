@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 
 export interface Doctor {
@@ -143,6 +142,19 @@ export const rescheduleAppointment = (id: number, newDate: string, newTime: stri
     appointments[index].date = newDate;
     appointments[index].time = newTime;
     localStorage.setItem('appointments', JSON.stringify(appointments));
+    return true;
+  }
+  
+  return false;
+};
+
+// Cancel an appointment
+export const cancelAppointment = (id: number): boolean => {
+  const appointments = getAppointments();
+  const filteredAppointments = appointments.filter(app => app.id !== id);
+  
+  if (filteredAppointments.length !== appointments.length) {
+    localStorage.setItem('appointments', JSON.stringify(filteredAppointments));
     return true;
   }
   
