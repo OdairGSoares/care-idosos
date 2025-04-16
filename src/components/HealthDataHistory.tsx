@@ -61,47 +61,49 @@ const HealthDataHistory = ({ data, type, onDataChange }: HealthDataHistoryProps)
   }
 
   return (
-    <Card className="mt-6">
+    <Card className="mt-6 overflow-hidden">
       <CardHeader>
         <div className="flex items-center">
           <FileText className="h-5 w-5 mr-2" />
           <CardTitle className="text-lg">Histórico de {getTypeLabel(type)}</CardTitle>
         </div>
-        <CardDescription>Registros ordenados por data (mais recente primeiro)</CardDescription>
+        <CardDescription className="hidden sm:block">Registros ordenados por data (mais recente primeiro)</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Data</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Observações</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedData.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>
-                  {format(parseISO(item.date), 'dd/MM/yyyy', { locale: ptBR })}
-                </TableCell>
-                <TableCell className="font-medium">{getValueWithUnit(item)}</TableCell>
-                <TableCell className="max-w-[200px] truncate">{item.notes || '-'}</TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleDelete(item.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Excluir</span>
-                  </Button>
-                </TableCell>
+      <CardContent className="px-1 sm:px-6">
+        <div className="w-full overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="whitespace-nowrap">Data</TableHead>
+                <TableHead className="whitespace-nowrap">Valor</TableHead>
+                <TableHead className="hidden sm:table-cell">Observações</TableHead>
+                <TableHead className="text-right w-[80px]">Ações</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {sortedData.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell className="whitespace-nowrap">
+                    {format(parseISO(item.date), 'dd/MM/yyyy', { locale: ptBR })}
+                  </TableCell>
+                  <TableCell className="font-medium whitespace-nowrap">{getValueWithUnit(item)}</TableCell>
+                  <TableCell className="hidden sm:table-cell max-w-[200px] truncate">{item.notes || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleDelete(item.id)}
+                      className="text-destructive hover:text-destructive h-8 w-8"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Excluir</span>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

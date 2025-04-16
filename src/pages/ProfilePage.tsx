@@ -69,15 +69,15 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+      <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center">
           <div className="mr-4 rounded-full bg-primary/10 p-2">
-            <User className="h-8 w-8 text-primary" />
+            <User className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Meu Perfil de Saúde</h1>
-            <p className="text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl font-bold">Meu Perfil de Saúde</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Acompanhe seus dados de saúde ao longo do tempo
             </p>
           </div>
@@ -101,93 +101,95 @@ const ProfilePage = () => {
       </div>
 
       <Tabs defaultValue="bloodPressure" onValueChange={(value) => setSelectedTab(value as HealthDataType)}>
-        <TabsList className="grid w-full grid-cols-5 mb-6">
-          <TabsTrigger value="bloodPressure">
+        <TabsList className="grid w-full grid-cols-5 mb-4 sm:mb-6 overflow-x-auto">
+          <TabsTrigger value="bloodPressure" className="px-2 sm:px-4">
             {getTabIcon('bloodPressure')}
-            <span className="ml-2 hidden sm:inline">Pressão</span>
+            <span className="ml-1 sm:ml-2 hidden sm:inline">Pressão</span>
           </TabsTrigger>
-          <TabsTrigger value="heartRate">
+          <TabsTrigger value="heartRate" className="px-2 sm:px-4">
             {getTabIcon('heartRate')}
-            <span className="ml-2 hidden sm:inline">Batimentos</span>
+            <span className="ml-1 sm:ml-2 hidden sm:inline">Batimentos</span>
           </TabsTrigger>
-          <TabsTrigger value="glucose">
+          <TabsTrigger value="glucose" className="px-2 sm:px-4">
             {getTabIcon('glucose')}
-            <span className="ml-2 hidden sm:inline">Glicose</span>
+            <span className="ml-1 sm:ml-2 hidden sm:inline">Glicose</span>
           </TabsTrigger>
-          <TabsTrigger value="weight">
+          <TabsTrigger value="weight" className="px-2 sm:px-4">
             {getTabIcon('weight')}
-            <span className="ml-2 hidden sm:inline">Peso</span>
+            <span className="ml-1 sm:ml-2 hidden sm:inline">Peso</span>
           </TabsTrigger>
-          <TabsTrigger value="temperature">
+          <TabsTrigger value="temperature" className="px-2 sm:px-4">
             {getTabIcon('temperature')}
-            <span className="ml-2 hidden sm:inline">Temperatura</span>
+            <span className="ml-1 sm:ml-2 hidden sm:inline">Temperatura</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="bloodPressure" className="mt-0">
-          <HealthDataChart 
-            data={healthData.bloodPressure} 
-            type="bloodPressure" 
-            onAddClick={handleAddClick} 
-          />
-          <HealthDataHistory 
-            data={healthData.bloodPressure} 
-            type="bloodPressure" 
-            onDataChange={loadHealthData} 
-          />
-        </TabsContent>
-        
-        <TabsContent value="heartRate" className="mt-0">
-          <HealthDataChart 
-            data={healthData.heartRate} 
-            type="heartRate" 
-            onAddClick={handleAddClick} 
-          />
-          <HealthDataHistory 
-            data={healthData.heartRate} 
-            type="heartRate" 
-            onDataChange={loadHealthData} 
-          />
-        </TabsContent>
+        <div className="overflow-x-hidden">
+          <TabsContent value="bloodPressure" className="mt-0">
+            <HealthDataChart 
+              data={healthData.bloodPressure} 
+              type="bloodPressure" 
+              onAddClick={handleAddClick} 
+            />
+            <HealthDataHistory 
+              data={healthData.bloodPressure} 
+              type="bloodPressure" 
+              onDataChange={loadHealthData} 
+            />
+          </TabsContent>
+          
+          <TabsContent value="heartRate" className="mt-0">
+            <HealthDataChart 
+              data={healthData.heartRate} 
+              type="heartRate" 
+              onAddClick={handleAddClick} 
+            />
+            <HealthDataHistory 
+              data={healthData.heartRate} 
+              type="heartRate" 
+              onDataChange={loadHealthData} 
+            />
+          </TabsContent>
 
-        <TabsContent value="glucose" className="mt-0">
-          <HealthDataChart 
-            data={healthData.glucose} 
-            type="glucose" 
-            onAddClick={handleAddClick} 
-          />
-          <HealthDataHistory 
-            data={healthData.glucose} 
-            type="glucose" 
-            onDataChange={loadHealthData} 
-          />
-        </TabsContent>
+          <TabsContent value="glucose" className="mt-0">
+            <HealthDataChart 
+              data={healthData.glucose} 
+              type="glucose" 
+              onAddClick={handleAddClick} 
+            />
+            <HealthDataHistory 
+              data={healthData.glucose} 
+              type="glucose" 
+              onDataChange={loadHealthData} 
+            />
+          </TabsContent>
 
-        <TabsContent value="weight" className="mt-0">
-          <HealthDataChart 
-            data={healthData.weight} 
-            type="weight" 
-            onAddClick={handleAddClick} 
-          />
-          <HealthDataHistory 
-            data={healthData.weight} 
-            type="weight" 
-            onDataChange={loadHealthData} 
-          />
-        </TabsContent>
+          <TabsContent value="weight" className="mt-0">
+            <HealthDataChart 
+              data={healthData.weight} 
+              type="weight" 
+              onAddClick={handleAddClick} 
+            />
+            <HealthDataHistory 
+              data={healthData.weight} 
+              type="weight" 
+              onDataChange={loadHealthData} 
+            />
+          </TabsContent>
 
-        <TabsContent value="temperature" className="mt-0">
-          <HealthDataChart 
-            data={healthData.temperature} 
-            type="temperature" 
-            onAddClick={handleAddClick} 
-          />
-          <HealthDataHistory 
-            data={healthData.temperature} 
-            type="temperature" 
-            onDataChange={loadHealthData} 
-          />
-        </TabsContent>
+          <TabsContent value="temperature" className="mt-0">
+            <HealthDataChart 
+              data={healthData.temperature} 
+              type="temperature" 
+              onAddClick={handleAddClick} 
+            />
+            <HealthDataHistory 
+              data={healthData.temperature} 
+              type="temperature" 
+              onDataChange={loadHealthData} 
+            />
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );
