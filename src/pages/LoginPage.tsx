@@ -4,54 +4,71 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, Home } from 'lucide-react';
 import Logo from '@/components/Logo';
-import { toast } from "sonner";
+import { toast } from 'sonner';
+import { post } from '@/utils/apiService';
 
-interface UserData {
-  firstName: string;
-  lastName: string;
+interface LoginCredentials {
   email: string;
-  phone: string;
   password: string;
+}
+
+interface LoginResponse {
+  token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  }
 }
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [credentials, setCredentials] = useState<LoginCredentials>({
+    email: '',
+    password: ''
+  });
   
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validação básica
-    if (!email || !password) {
-      toast.error("Por favor, preencha todos os campos");
-      return;
-    }
-    
-    // Verificar credenciais no localStorage
-    const users: UserData[] = JSON.parse(localStorage.getItem('users') || '[]');
-    const user = users.find(user => user.email === email && user.password === password);
-    
-    if (!user) {
-      toast.error("Email ou senha incorretos");
-      return;
-    }
-    
-    // Salvar sessão do usuário
-    localStorage.setItem('currentUser', JSON.stringify({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phone: user.phone,
-      isLoggedIn: true
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setCredentials(prev => ({
+      ...prev,
+      [id]: value
     }));
-    
-    toast.success("Login realizado com sucesso!");
-    navigate('/dashboard');
   };
   
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      // Validação básica
+      if (!credentials.email || !credentials.password) {
+        toast.error("Por favor, preencha todos os campos");
+        return;
+      }
+      
+      const response = await post<LoginCredentials, LoginResponse>('/user/login', credentials);
+      
+      if (response && response.token) {
+        // Salvar token de autenticação
+        localStorage.setItem('authToken', response.token);
+        localStorage.setItem('userName', response.user.name);
+        localStorage.setItem('userEmail', response.user.email);
+        localStorage.setItem('userId', response.user.id.toString());
+        
+        toast.success("Login realizado com sucesso!");
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error("Erro no login:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
@@ -76,62 +93,66 @@ const LoginPage = () => {
         <div className="w-full max-w-md">
           <Card className="shadow-lg border-care-teal/20">
             <CardHeader className="space-y-2 text-center">
-              <CardTitle className="text-2xl font-bold text-care-purple">Bem-vindo de volta!</CardTitle>
+              <CardTitle className="text-2xl font-bold text-care-purple">Bem-vindo novamente</CardTitle>
               <CardDescription className="text-senior">
-                Faça login para acessar sua conta
+                Entre com suas credenciais para acessar sua conta
               </CardDescription>
             </CardHeader>
             
             <CardContent className="space-y-6">
-              <form onSubmit={handleLogin}>
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-senior">
-                      Email
-                    </label>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                        <Mail className="h-5 w-5" />
-                      </span>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        placeholder="seu@email.com" 
-                        className="pl-10 text-senior h-12"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-senior">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                      <Mail className="h-5 w-5" />
+                    </span>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="seu@email.com" 
+                      className="pl-10 text-senior h-12" 
+                      value={credentials.email}
+                      onChange={handleInputChange}
+                      disabled={isLoading}
+                    />
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-senior">
-                        Senha
-                      </label>
-                      <Link to="/forgot-password" className="text-sm text-care-teal hover:text-care-dark-teal text-senior">
-                        Esqueceu a senha?
-                      </Link>
-                    </div>
-                    <div className="relative">
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                        <Lock className="h-5 w-5" />
-                      </span>
-                      <Input 
-                        id="password" 
-                        type="password" 
-                        placeholder="••••••••" 
-                        className="pl-10 text-senior h-12"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  
-                  <Button type="submit" className="w-full h-12 text-senior bg-care-teal hover:bg-care-dark-teal">
-                    Entrar
-                  </Button>
                 </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-senior">
+                      Senha
+                    </label>
+                    <Link to="/reset-password" className="text-sm font-medium text-care-teal hover:text-care-dark-teal text-senior">
+                      Esqueceu a senha?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                      <Lock className="h-5 w-5" />
+                    </span>
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      placeholder="••••••••" 
+                      className="pl-10 text-senior h-12" 
+                      value={credentials.password}
+                      onChange={handleInputChange}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 text-senior bg-care-teal hover:bg-care-dark-teal"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Entrando...' : 'Entrar'}
+                </Button>
               </form>
               
               <div className="text-center">
@@ -146,7 +167,7 @@ const LoginPage = () => {
             
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-center text-gray-600 text-senior">
-                Ainda não tem uma conta?{' '}
+                Não tem uma conta ainda?{' '}
                 <Link to="/signup" className="text-care-teal font-medium hover:text-care-dark-teal">
                   Cadastre-se
                 </Link>

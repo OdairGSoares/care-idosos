@@ -1,17 +1,19 @@
+
+import { get, post, put, del } from './apiService';
 import { toast } from "sonner";
 
 export interface Doctor {
   id: number;
-  name: string;
+  doctorName: string;
   specialty: string;
   image?: string;
 }
 
 export interface Location {
   id: number;
-  name: string;
-  address: string;
-  city: string;
+  locationName: string;
+  locationAddress: string;
+  locationCity: string;
 }
 
 export interface TimeSlot {
@@ -34,22 +36,27 @@ export interface Appointment {
   createdAt: string;
 }
 
-// Sample data for doctors
-export const doctors: Doctor[] = [
-  { id: 1, name: "Dra. Maria Silva", specialty: "Cardiologista" },
-  { id: 2, name: "Dr. João Pereira", specialty: "Clínico Geral" },
-  { id: 3, name: "Dra. Ana Santos", specialty: "Neurologista" },
-  { id: 4, name: "Dr. Carlos Oliveira", specialty: "Ortopedista" },
-  { id: 5, name: "Dra. Fernanda Lima", specialty: "Dermatologista" },
-  { id: 6, name: "Dr. Ricardo Nunes", specialty: "Oftalmologista" },
-];
+// Get all doctors from API
+export const getDoctors = async (): Promise<Doctor[]> => {
+  const doctors = await get<Doctor[]>('/doctor');
+  return doctors || [];
+};
 
-// Sample data for locations
-export const locations: Location[] = [
-  { id: 1, name: "Clínica Saúde Total", address: "Av. Paulista, 1000", city: "São Paulo" },
-  { id: 2, name: "Hospital São Lucas", address: "Rua Augusta, 500", city: "São Paulo" },
-  { id: 3, name: "Centro Médico Vida", address: "Av. Rebouças, 750", city: "São Paulo" },
-];
+// Get doctor by ID
+export const getDoctor = async (id: number): Promise<Doctor | null> => {
+  return await get<Doctor>(`/doctor/${id}`);
+};
+
+// Get all locations from API
+export const getLocations = async (): Promise<Location[]> => {
+  const locations = await get<Location[]>('/location');
+  return locations || [];
+};
+
+// Get location by ID
+export const getLocation = async (id: number): Promise<Location | null> => {
+  return await get<Location>(`/location/${id}`);
+};
 
 // Get available time slots for a given date
 export const getAvailableTimeSlots = (date: Date): TimeSlot[] => {
@@ -79,97 +86,51 @@ export const getAvailableTimeSlots = (date: Date): TimeSlot[] => {
 };
 
 // Get unique specialties from doctors
-export const getSpecialties = (): string[] => {
+export const getSpecialties = async (): Promise<string[]> => {
+  const doctors = await getDoctors();
   const specialties = doctors.map(doctor => doctor.specialty);
   return [...new Set(specialties)];
 };
 
 // Get doctors by specialty
-export const getDoctorsBySpecialty = (specialty: string): Doctor[] => {
+export const getDoctorsBySpecialty = async (specialty: string): Promise<Doctor[]> => {
+  const doctors = await getDoctors();
   return doctors.filter(doctor => doctor.specialty === specialty);
 };
 
-// Save appointments to localStorage
-export const saveAppointment = (appointment: Omit<Appointment, "id" | "createdAt">): Appointment => {
-  // Get existing appointments
-  const appointments = getAppointments();
-  
-  // Generate a new ID
-  const id = appointments.length > 0
-    ? Math.max(...appointments.map(app => app.id)) + 1
-    : 1;
-  
-  // Create the new appointment with ID and createdAt
-  const newAppointment: Appointment = {
-    ...appointment,
-    id,
-    createdAt: new Date().toISOString()
-  };
-  
-  // Add to the list and save
-  appointments.push(newAppointment);
-  localStorage.setItem('appointments', JSON.stringify(appointments));
-  
-  return newAppointment;
+// Save appointment to API
+export const saveAppointment = async (appointment: Omit<Appointment, "id" | "createdAt">): Promise<Appointment | null> => {
+  return await post<Omit<Appointment, "id" | "createdAt">, Appointment>('/appointment', appointment);
 };
 
-// Get all appointments from localStorage
-export const getAppointments = (): Appointment[] => {
-  const appointmentsString = localStorage.getItem('appointments');
-  return appointmentsString ? JSON.parse(appointmentsString) : [];
+// Get all appointments from API
+export const getAppointments = async (): Promise<Appointment[]> => {
+  const appointments = await get<Appointment[]>('/appointment');
+  return appointments || [];
 };
 
 // Confirm an appointment
-export const confirmAppointment = (id: number): boolean => {
-  const appointments = getAppointments();
-  const index = appointments.findIndex(app => app.id === id);
-  
-  if (index !== -1) {
-    appointments[index].confirmed = true;
-    localStorage.setItem('appointments', JSON.stringify(appointments));
-    return true;
-  }
-  
-  return false;
+export const confirmAppointment = async (id: number): Promise<boolean> => {
+  const result = await put<{}, Appointment>(`/appointment/confirmed/${id}`, {});
+  return result !== null;
 };
 
 // Reschedule an appointment
-export const rescheduleAppointment = (id: number, newDate: string, newTime: string): boolean => {
-  const appointments = getAppointments();
-  const index = appointments.findIndex(app => app.id === id);
-  
-  if (index !== -1) {
-    appointments[index].date = newDate;
-    appointments[index].time = newTime;
-    localStorage.setItem('appointments', JSON.stringify(appointments));
-    return true;
-  }
-  
-  return false;
+export const rescheduleAppointment = async (id: number, newDate: string, newTime: string): Promise<boolean> => {
+  const result = await put<{date: string, time: string}, Appointment>(
+    `/appointment/${id}`, 
+    { date: newDate, time: newTime }
+  );
+  return result !== null;
 };
 
 // Cancel an appointment
-export const cancelAppointment = (id: number): boolean => {
-  const appointments = getAppointments();
-  const filteredAppointments = appointments.filter(app => app.id !== id);
-  
-  if (filteredAppointments.length !== appointments.length) {
-    localStorage.setItem('appointments', JSON.stringify(filteredAppointments));
-    return true;
-  }
-  
-  return false;
+export const cancelAppointment = async (id: number): Promise<boolean> => {
+  return await deleteAppointment(id);
 };
 
 // Delete an appointment
-export const deleteAppointment = (id: number): boolean => {
-  const appointments = getAppointments();
-  const filteredAppointments = appointments.filter(app => app.id !== id);
-  
-  if (filteredAppointments.length !== appointments.length) {
-    localStorage.setItem('appointments', JSON.stringify(filteredAppointments));
-    return true;
-  }
-  
-  return false;
+export const deleteAppointment = async (id: number): Promise<boolean> => {
+  const result = await del(`/appointment/${id}`);
+  return result !== null;
 };

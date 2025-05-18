@@ -1,3 +1,4 @@
+import { get, post, put, del } from './apiService';
 
 export type HealthDataType = 'bloodPressure' | 'heartRate' | 'glucose' | 'weight' | 'temperature';
 
@@ -9,6 +10,9 @@ export interface HealthData {
   date: string;
   notes?: string;
 }
+
+// Note: Assuming the backend will have health data endpoints in future
+// For now, we'll keep it localStorage based but with the API structure
 
 const LOCAL_STORAGE_KEY = 'health_data';
 

@@ -1,22 +1,54 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Star, PhoneCall } from 'lucide-react';
-import { EmergencyContact } from '@/utils/emergencyContactsUtils';
+import { Edit, Trash2, Star, PhoneCall, Loader2 } from 'lucide-react';
+import { EmergencyContact, deleteEmergencyContact } from '@/utils/emergencyContactsUtils';
+import { toast } from 'sonner';
 
 interface EmergencyContactListProps {
   contacts: EmergencyContact[];
   onEdit: (contact: EmergencyContact) => void;
   onDelete: (id: number) => void;
+  isLoading: boolean;
 }
 
-const EmergencyContactList = ({ contacts, onEdit, onDelete }: EmergencyContactListProps) => {
+const EmergencyContactList = ({ contacts, onEdit, onDelete, isLoading }: EmergencyContactListProps) => {
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+
   // Function to handle calling a contact
   const handleCall = (phoneNumber: string) => {
     window.location.href = `tel:${phoneNumber}`;
   };
+
+  // Function to handle delete with loading state
+  const handleDelete = async (id: number) => {
+    if (window.confirm("Tem certeza que deseja excluir este contato?")) {
+      setDeletingId(id);
+      try {
+        const success = await deleteEmergencyContact(id);
+        if (success) {
+          onDelete(id);
+          toast.success("Contato excluído com sucesso");
+        }
+      } catch (error) {
+        console.error("Erro ao excluir contato:", error);
+        toast.error("Erro ao excluir contato");
+      } finally {
+        setDeletingId(null);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-care-purple" />
+        <p className="mt-2 text-gray-500">Carregando contatos...</p>
+      </div>
+    );
+  }
 
   if (contacts.length === 0) {
     return (
@@ -33,14 +65,14 @@ const EmergencyContactList = ({ contacts, onEdit, onDelete }: EmergencyContactLi
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Nome</TableHead>
             <TableHead>Telefone</TableHead>
-            <TableHead>Relacionamento</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="hidden md:table-cell">Relacionamento</TableHead>
+            <TableHead className="hidden sm:table-cell">Status</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -51,8 +83,8 @@ const EmergencyContactList = ({ contacts, onEdit, onDelete }: EmergencyContactLi
                 {contact.name}
               </TableCell>
               <TableCell className="text-senior">{contact.phone}</TableCell>
-              <TableCell className="text-senior">{contact.relationship}</TableCell>
-              <TableCell>
+              <TableCell className="hidden md:table-cell text-senior">{contact.relationship}</TableCell>
+              <TableCell className="hidden sm:table-cell">
                 {contact.isMainContact && (
                   <Badge className="bg-care-purple hover:bg-care-light-purple">
                     <Star className="h-3 w-3 mr-1" />
@@ -83,10 +115,15 @@ const EmergencyContactList = ({ contacts, onEdit, onDelete }: EmergencyContactLi
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => onDelete(contact.id)}
+                    onClick={() => handleDelete(contact.id)}
+                    disabled={deletingId === contact.id}
                     className="text-destructive hover:text-destructive"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {deletingId === contact.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                     <span className="sr-only">Excluir</span>
                   </Button>
                 </div>
