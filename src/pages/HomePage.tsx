@@ -15,6 +15,7 @@ const HomePage = () => {
   };
   
   const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Fetch the next appointment on component mount
   useEffect(() => {
@@ -22,38 +23,51 @@ const HomePage = () => {
   }, []);
   
   // Load the next upcoming appointment
-  const loadNextAppointment = () => {
-    const appointments = getAppointments();
-    
-    // Filter for upcoming appointments only
-    const upcomingAppointments = appointments.filter(app => {
-      const appointmentDate = new Date(`${app.date}T${app.time}`);
-      return appointmentDate >= new Date();
-    });
-    
-    // Sort by date (earliest first) and get the first one
-    if (upcomingAppointments.length > 0) {
-      const sortedAppointments = upcomingAppointments.sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
-        return dateA.getTime() - dateB.getTime();
+  const loadNextAppointment = async () => {
+    try {
+      setIsLoading(true);
+      const appointments = await getAppointments();
+      
+      // Filter for upcoming appointments only
+      const upcomingAppointments = appointments.filter(app => {
+        const appointmentDate = new Date(`${app.date}T${app.time}`);
+        return appointmentDate >= new Date();
       });
       
-      setNextAppointment(sortedAppointments[0]);
-    } else {
-      setNextAppointment(null);
+      // Sort by date (earliest first) and get the first one
+      if (upcomingAppointments.length > 0) {
+        const sortedAppointments = upcomingAppointments.sort((a, b) => {
+          const dateA = new Date(`${a.date}T${a.time}`);
+          const dateB = new Date(`${b.date}T${b.time}`);
+          return dateA.getTime() - dateB.getTime();
+        });
+        
+        setNextAppointment(sortedAppointments[0]);
+      } else {
+        setNextAppointment(null);
+      }
+    } catch (error) {
+      console.error("Error loading appointments:", error);
+      toast.error("Erro ao carregar próxima consulta");
+    } finally {
+      setIsLoading(false);
     }
   };
   
   // Handle confirming appointment
-  const handleConfirmAppointment = (id: number) => {
-    const success = confirmAppointment(id);
-    
-    if (success) {
-      toast.success("Presença confirmada com sucesso!");
-      loadNextAppointment(); // Refresh appointment data
-    } else {
-      toast.error("Erro ao confirmar presença. Tente novamente.");
+  const handleConfirmAppointment = async (id: number) => {
+    try {
+      const success = await confirmAppointment(id);
+      
+      if (success) {
+        toast.success("Presença confirmada com sucesso!");
+        await loadNextAppointment(); // Refresh appointment data
+      } else {
+        toast.error("Erro ao confirmar presença. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Error confirming appointment:", error);
+      toast.error("Erro ao confirmar presença");
     }
   };
   

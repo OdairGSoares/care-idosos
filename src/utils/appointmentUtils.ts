@@ -36,6 +36,28 @@ export interface Appointment {
   createdAt: string;
 }
 
+// Example locations data
+export const locations: Location[] = [
+  {
+    id: 1,
+    locationName: "Clínica Central",
+    locationAddress: "Av. Paulista, 1000",
+    locationCity: "São Paulo"
+  },
+  {
+    id: 2,
+    locationName: "Hospital São Lucas",
+    locationAddress: "Rua Augusta, 500",
+    locationCity: "São Paulo"
+  },
+  {
+    id: 3,
+    locationName: "Centro Médico Jardins",
+    locationAddress: "Alameda Santos, 800",
+    locationCity: "São Paulo"
+  }
+];
+
 // Get all doctors from API
 export const getDoctors = async (): Promise<Doctor[]> => {
   const doctors = await get<Doctor[]>('/doctor');

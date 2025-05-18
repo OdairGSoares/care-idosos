@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
@@ -38,7 +38,7 @@ import {
   TimeSlot, 
   getSpecialties, 
   getDoctorsBySpecialty, 
-  locations, 
+  locations,
   getAvailableTimeSlots, 
   saveAppointment 
 } from '@/utils/appointmentUtils';
@@ -77,19 +77,41 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
   const [availableDoctors, setAvailableDoctors] = useState<Doctor[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [specialties, setSpecialties] = useState<string[]>([]);
+  
+  // Load specialties on component mount
+  useEffect(() => {
+    const loadSpecialties = async () => {
+      try {
+        const fetchedSpecialties = await getSpecialties();
+        setSpecialties(fetchedSpecialties);
+      } catch (error) {
+        console.error("Error loading specialties:", error);
+        toast.error("Erro ao carregar especialidades");
+      }
+    };
+    
+    if (isOpen) {
+      loadSpecialties();
+    }
+  }, [isOpen]);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const specialties = getSpecialties();
-  
   // Handle specialty selection
-  const handleSpecialtyChange = (value: string) => {
+  const handleSpecialtyChange = async (value: string) => {
     setSelectedSpecialty(value);
-    const filteredDoctors = getDoctorsBySpecialty(value);
-    setAvailableDoctors(filteredDoctors);
     form.setValue("specialty", value);
+    
+    try {
+      const filteredDoctors = await getDoctorsBySpecialty(value);
+      setAvailableDoctors(filteredDoctors);
+    } catch (error) {
+      console.error("Error loading doctors:", error);
+      toast.error("Erro ao carregar médicos");
+    }
     
     // Reset doctor and date selections
     form.setValue("doctorId", undefined as any);
@@ -113,7 +135,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
   };
   
   // Handle form submission
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     // Find selected doctor and location
     const doctor = availableDoctors.find(doc => doc.id === data.doctorId);
     const location = locations.find(loc => loc.id === data.locationId);
@@ -127,23 +149,32 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
     // Format date for storage
     const formattedDate = format(data.date, 'yyyy-MM-dd');
     
-    // Save appointment
-    const appointment = saveAppointment({
-      doctorId: doctor.id,
-      doctorName: doctor.name,
-      specialty: doctor.specialty,
-      locationId: location.id,
-      locationName: location.name,
-      locationAddress: location.address,
-      date: formattedDate,
-      time: timeSlot.time,
-      confirmed: false,
-    });
-    
-    toast.success("Consulta agendada com sucesso!");
-    resetForm();
-    onScheduled();
-    onClose();
+    try {
+      // Save appointment
+      const appointment = await saveAppointment({
+        doctorId: doctor.id,
+        doctorName: doctor.doctorName,
+        specialty: doctor.specialty,
+        locationId: location.id,
+        locationName: location.locationName,
+        locationAddress: location.locationAddress,
+        date: formattedDate,
+        time: timeSlot.time,
+        confirmed: false,
+      });
+      
+      if (appointment) {
+        toast.success("Consulta agendada com sucesso!");
+        resetForm();
+        onScheduled();
+        onClose();
+      } else {
+        toast.error("Erro ao agendar consulta.");
+      }
+    } catch (error) {
+      console.error("Error scheduling appointment:", error);
+      toast.error("Erro ao agendar consulta.");
+    }
   };
   
   // Reset the form and state
@@ -251,7 +282,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                         <SelectContent>
                           {availableDoctors.map((doctor) => (
                             <SelectItem key={doctor.id} value={doctor.id.toString()}>
-                              {doctor.name}
+                              {doctor.doctorName}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -281,7 +312,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                         <SelectContent>
                           {locations.map((location) => (
                             <SelectItem key={location.id} value={location.id.toString()}>
-                              {location.name} - {location.address}
+                              {location.locationName} - {location.locationAddress}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -371,9 +402,9 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                   return (
                     <div className="space-y-2 text-sm">
                       <p><span className="font-semibold">Especialidade:</span> {values.specialty}</p>
-                      <p><span className="font-semibold">Profissional:</span> {doctor?.name}</p>
-                      <p><span className="font-semibold">Local:</span> {location?.name}</p>
-                      <p><span className="font-semibold">Endereço:</span> {location?.address}, {location?.city}</p>
+                      <p><span className="font-semibold">Profissional:</span> {doctor?.doctorName}</p>
+                      <p><span className="font-semibold">Local:</span> {location?.locationName}</p>
+                      <p><span className="font-semibold">Endereço:</span> {location?.locationAddress}, {location?.locationCity}</p>
                       <p><span className="font-semibold">Data:</span> {values.date ? format(values.date, "dd 'de' MMMM 'de' yyyy", {locale: ptBR}) : ''}</p>
                       <p><span className="font-semibold">Horário:</span> {timeSlot?.time}</p>
                     </div>

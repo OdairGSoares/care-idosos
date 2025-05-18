@@ -29,39 +29,69 @@ const EmergencyContactsPage = () => {
   const [isAddingContact, setIsAddingContact] = useState(false);
   const [editingContact, setEditingContact] = useState<EmergencyContact | null>(null);
   const [deletingContactId, setDeletingContactId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Carregar contatos ao inicializar
   useEffect(() => {
     loadContacts();
   }, []);
 
-  const loadContacts = () => {
-    const loadedContacts = getEmergencyContacts();
-    setContacts(loadedContacts);
-  };
-
-  const handleAddContact = (data: Omit<EmergencyContact, 'id'>) => {
-    addEmergencyContact(data);
-    loadContacts();
-    setIsAddingContact(false);
-    toast.success('Contato adicionado com sucesso!');
-  };
-
-  const handleEditContact = (data: Omit<EmergencyContact, 'id'>) => {
-    if (editingContact) {
-      updateEmergencyContact({ ...data, id: editingContact.id });
-      loadContacts();
-      setEditingContact(null);
-      toast.success('Contato atualizado com sucesso!');
+  const loadContacts = async () => {
+    try {
+      setIsLoading(true);
+      const loadedContacts = await getEmergencyContacts();
+      setContacts(loadedContacts);
+    } catch (error) {
+      console.error("Error loading contacts:", error);
+      toast.error("Erro ao carregar contatos");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDeleteContact = () => {
+  const handleAddContact = async (data: Omit<EmergencyContact, 'id'>) => {
+    try {
+      const newContact = await addEmergencyContact(data);
+      if (newContact) {
+        await loadContacts();
+        setIsAddingContact(false);
+        toast.success('Contato adicionado com sucesso!');
+      }
+    } catch (error) {
+      console.error("Error adding contact:", error);
+      toast.error("Erro ao adicionar contato");
+    }
+  };
+
+  const handleEditContact = async (data: Omit<EmergencyContact, 'id'>) => {
+    if (editingContact) {
+      try {
+        const updated = await updateEmergencyContact({ ...data, id: editingContact.id });
+        if (updated) {
+          await loadContacts();
+          setEditingContact(null);
+          toast.success('Contato atualizado com sucesso!');
+        }
+      } catch (error) {
+        console.error("Error updating contact:", error);
+        toast.error("Erro ao atualizar contato");
+      }
+    }
+  };
+
+  const handleDeleteContact = async () => {
     if (deletingContactId !== null) {
-      deleteEmergencyContact(deletingContactId);
-      loadContacts();
-      setDeletingContactId(null);
-      toast.success('Contato removido com sucesso!');
+      try {
+        const deleted = await deleteEmergencyContact(deletingContactId);
+        if (deleted) {
+          await loadContacts();
+          setDeletingContactId(null);
+          toast.success('Contato removido com sucesso!');
+        }
+      } catch (error) {
+        console.error("Error deleting contact:", error);
+        toast.error("Erro ao remover contato");
+      }
     }
   };
 
@@ -122,6 +152,7 @@ const EmergencyContactsPage = () => {
           contacts={contacts} 
           onEdit={openEditSheet} 
           onDelete={openDeleteDialog} 
+          isLoading={isLoading}
         />
       </div>
 

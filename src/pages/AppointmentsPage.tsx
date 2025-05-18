@@ -13,16 +13,25 @@ const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("upcoming");
+  const [isLoading, setIsLoading] = useState(true);
   
   // Fetch appointments on mount and when they change
   useEffect(() => {
     loadAppointments();
   }, []);
   
-  // Load appointments from localStorage
-  const loadAppointments = () => {
-    const loadedAppointments = getAppointments();
-    setAppointments(loadedAppointments);
+  // Load appointments from API
+  const loadAppointments = async () => {
+    try {
+      setIsLoading(true);
+      const loadedAppointments = await getAppointments();
+      setAppointments(loadedAppointments);
+    } catch (error) {
+      console.error("Error loading appointments:", error);
+      toast.error("Erro ao carregar consultas");
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   // Filter appointments by status (upcoming or past)
@@ -46,14 +55,19 @@ const AppointmentsPage = () => {
     : null;
 
   // Handle confirming appointment from card
-  const handleConfirmAppointment = (id: number) => {
-    const success = confirmAppointment(id);
-    
-    if (success) {
-      toast.success("Presença confirmada com sucesso!");
-      loadAppointments();
-    } else {
-      toast.error("Erro ao confirmar presença. Tente novamente.");
+  const handleConfirmAppointment = async (id: number) => {
+    try {
+      const success = await confirmAppointment(id);
+      
+      if (success) {
+        toast.success("Presença confirmada com sucesso!");
+        await loadAppointments();
+      } else {
+        toast.error("Erro ao confirmar presença. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Error confirming appointment:", error);
+      toast.error("Erro ao confirmar presença");
     }
   };
 
