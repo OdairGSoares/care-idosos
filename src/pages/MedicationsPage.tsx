@@ -26,6 +26,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import axios from 'axios';
 
 interface Medication {
   id: number;
@@ -46,14 +47,6 @@ const MedicationsPage = () => {
   const [formValid, setFormValid] = useState(false);
 
   useEffect(() => {
-    // Load medications from localStorage
-    const savedMedications = localStorage.getItem('medications');
-    if (savedMedications) {
-      setMedications(JSON.parse(savedMedications));
-    }
-  }, []);
-
-  useEffect(() => {
     // Validate form
     const isValid = 
       newMedication.name.trim() !== '' && 
@@ -61,12 +54,26 @@ const MedicationsPage = () => {
       newMedication.time.trim() !== '';
     
     setFormValid(isValid);
+
   }, [newMedication]);
 
-  const saveMedications = (updatedMedications: Medication[]) => {
-    setMedications(updatedMedications);
-    localStorage.setItem('medications', JSON.stringify(updatedMedications));
-  };
+  useEffect(()=>{
+    async function loadMedication() {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+      const medications = await axios.get('https://elderly-care.onrender.com/medication', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+      setMedications(medications.data)
+    }
+
+    loadMedication()
+  })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,9 +89,38 @@ const MedicationsPage = () => {
       taken: false
     };
 
-    const updatedMedications = [...medications, newMed];
-    saveMedications(updatedMedications);
+    async function addMedication() {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
     
+      // Prepara apenas os campos necessários, com `dosage` como número
+      const payload = {
+        name: newMed.name,
+        dosage: Number(newMed.dosage),
+        time: newMed.time
+      };
+
+      try {
+        await axios.post(
+          'https://elderly-care.onrender.com/medication',
+          payload,
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          }
+        );
+        toast.success('Medicação adicionada com sucesso!');
+      } catch (error) {
+        toast.error('Erro ao adicionar medicação.');
+      }
+    }
+
+    addMedication()
+
     // Reset form
     setNewMedication({
       name: '',
@@ -93,20 +129,68 @@ const MedicationsPage = () => {
     });
     
     setDialogOpen(false);
-    toast.success('Medicamento adicionado com sucesso!');
   };
 
   const handleDeleteMedication = (id: number) => {
-    const updatedMedications = medications.filter(med => med.id !== id);
-    saveMedications(updatedMedications);
-    toast.success('Medicamento removido com sucesso!');
-  };
+    
+    async function deleteMedication() {
 
-  const resetAllMedications = () => {
-    const resetMedications = medications.map(med => ({ ...med, taken: false }));
-    saveMedications(resetMedications);
-    toast.success('Todos os medicamentos foram reiniciados!');
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+
+      const deletedMedication = medications.find(med => med.id === id);
+
+      try {
+        await axios.delete(
+          `https://elderly-care.onrender.com/medication/${deletedMedication.id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          }
+        );
+        toast.success('Medicação removida com sucesso!');
+      } catch (error) {
+        toast.error('Erro ao remover medicação.');
+      } 
+    }
+    deleteMedication()
   };
+  
+
+  const resetAllMedications = async () => {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      console.error('Token de autenticação não encontrado.');
+      toast.error('Token não encontrado.');
+      return;
+    }
+  
+    try {
+      // Deleta todos os medicamentos em paralelo
+      await Promise.all(
+        medications.map(med =>
+          axios.delete(`https://elderly-care.onrender.com/medication/${med.id}`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          })
+        )
+      );
+  
+      // Atualiza o estado local se necessário
+      setMedications([]);
+  
+      toast.success('Todos os medicamentos foram removidos com sucesso!');
+    } catch (error) {
+      console.error('Erro ao remover todos os medicamentos:', error);
+      toast.error('Erro ao remover todos os medicamentos.');
+    }
+  };
+  
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
@@ -140,7 +224,7 @@ const MedicationsPage = () => {
                 <Input
                   id="dosage"
                   name="dosage"
-                  placeholder="Ex: 50mg"
+                  placeholder="Ex: 50"
                   value={newMedication.dosage}
                   onChange={handleInputChange}
                   className="text-senior"
@@ -203,7 +287,7 @@ const MedicationsPage = () => {
                       <Pill className="h-5 w-5 text-care-teal" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-medium text-senior">{medication.name} {medication.dosage}</h3>
+                      <h3 className="text-lg font-medium text-senior">{medication.name} {medication.dosage} mg</h3>
                       <div className="flex items-center text-gray-500">
                         <Clock className="h-4 w-4 mr-1" />
                         <span>{medication.time}</span>

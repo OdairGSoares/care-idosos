@@ -5,6 +5,14 @@ import EmergencyButton from './EmergencyButton';
 import { Outlet } from 'react-router-dom';
 
 const Layout = () => {
+
+  const authToken = localStorage.getItem('authToken');
+
+  if (!authToken) {
+    window.location.href = '/';
+    return;
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />

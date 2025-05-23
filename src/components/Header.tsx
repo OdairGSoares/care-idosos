@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -6,33 +5,50 @@ import { User, Bell, Menu, LogOut } from 'lucide-react';
 import Logo from './Logo';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { toast } from "sonner";
+import axios from 'axios';
 
-interface CurrentUser {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  isLoggedIn: boolean;
-}
+type Usuario = {
+  token: string | null;
+  info: {
+    firstName: string;
+  };
+} | null;
 
 const Header = () => {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [usuario, setUsuario] = useState<Usuario>(null);
 
   useEffect(() => {
-    const userFromStorage = localStorage.getItem('currentUser');
-    if (userFromStorage) {
-      try {
-        setCurrentUser(JSON.parse(userFromStorage));
-      } catch (error) {
-        console.error('Erro ao processar dados do usuário:', error);
-      }
-    }
+    const fetchUser = async () => {
+      const userToken = localStorage.getItem('authToken');
+
+      console.log(userToken)
+/*
+      const userInfo = await axios.get(`https://elderly-care.onrender.com/user/${userToken}`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `${userToken}`
+        }
+      });
+*/
+
+      setUsuario(
+        {
+          token: userToken,
+          info: {
+            firstName: "Júlio",
+          }
+        }
+      )
+
+    };
+
+    fetchUser();
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('currentUser');
-    setCurrentUser(null);
+    localStorage.removeItem('authToken');
+    setUsuario(null);
     toast.success("Logout realizado com sucesso!");
     navigate('/');
   };
@@ -40,14 +56,14 @@ const Header = () => {
   return (
     <header className="border-b shadow-sm py-4 bg-white">
       <div className="care-container flex items-center justify-between">
-        <Link to={currentUser?.isLoggedIn ? "/dashboard" : "/"} className="flex items-center">
+        <Link to={usuario?.token ? "/dashboard" : "/"} className="flex items-center">
           <Logo />
           <span className="ml-2 text-senior-xl font-bold text-care-purple">Care Idosos</span>
         </Link>
         
         {/* Mobile menu */}
         <div className="flex md:hidden items-center gap-4">
-          {currentUser?.isLoggedIn ? (
+          {usuario?.token ? (
             <>
               <Link to="/dashboard/notifications">
                 <Button variant="ghost" size="icon" aria-label="Notifications">
@@ -64,7 +80,7 @@ const Header = () => {
                 <SheetContent className="w-[250px]">
                   <nav className="flex flex-col gap-4 mt-8">
                     <div className="py-2 px-4 rounded-md bg-gray-100 mb-4">
-                      <p className="font-medium text-care-purple">Olá, {currentUser.firstName}</p>
+                      <p className="font-medium text-care-purple">Olá, {usuario?.info.firstName}</p>
                     </div>
                     <Link to="/dashboard" className="text-senior-lg py-2 px-4 rounded-md hover:bg-slate-100">Início</Link>
                     <Link to="/dashboard/medications" className="text-senior-lg py-2 px-4 rounded-md hover:bg-slate-100">Medicamentos</Link>
@@ -99,7 +115,7 @@ const Header = () => {
         </div>
         
         {/* Desktop navigation */}
-        {currentUser?.isLoggedIn ? (
+        {usuario?.token ? (
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/dashboard" className="text-senior hover:text-care-teal">Início</Link>
             <Link to="/dashboard/medications" className="text-senior hover:text-care-teal">Medicamentos</Link>

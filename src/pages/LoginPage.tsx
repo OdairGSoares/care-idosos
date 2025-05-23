@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Mail, Lock, User, Home } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { toast } from 'sonner';
-import { post } from '@/utils/apiService';
+import axios from 'axios';
 
 interface LoginCredentials {
   email: string;
@@ -49,19 +49,17 @@ const LoginPage = () => {
         toast.error("Por favor, preencha todos os campos");
         return;
       }
-      
-      const response = await post<LoginCredentials, LoginResponse>('/user/login', credentials);
-      
-      if (response && response.token) {
-        // Salvar token de autenticação
-        localStorage.setItem('authToken', response.token);
-        localStorage.setItem('userName', response.user.name);
-        localStorage.setItem('userEmail', response.user.email);
-        localStorage.setItem('userId', response.user.id.toString());
-        
-        toast.success("Login realizado com sucesso!");
-        navigate('/dashboard');
-      }
+
+      axios.post('https://elderly-care.onrender.com/user/login', credentials).then(response=>{
+        if (response.data) {
+          localStorage.setItem('authToken', response.data);
+          toast.success("Login realizado com sucesso!");
+          navigate('/dashboard');
+        } else {
+          toast.error("Erro ao realizar login. Verifique suas credenciais.");
+        }
+      })
+
     } catch (error) {
       console.error("Erro no login:", error);
     } finally {

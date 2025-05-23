@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -32,25 +32,24 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { 
-  Doctor, 
-  Location, 
-  TimeSlot, 
-  getSpecialties, 
-  getDoctorsBySpecialty, 
+import {
+  TimeSlot,
+  getSpecialties,
+  getDoctorsBySpecialty,
   locations,
-  getAvailableTimeSlots, 
-  saveAppointment 
+  getAvailableTimeSlots,
+  saveAppointment
 } from '@/utils/appointmentUtils';
+import axios from 'axios';
 
 const formSchema = z.object({
   specialty: z.string({
     required_error: "Selecione uma especialidade",
   }),
-  doctorId: z.coerce.number({
+  doctorId: z.string({
     required_error: "Selecione um médico",
   }),
-  locationId: z.coerce.number({
+  locationId: z.string({
     required_error: "Selecione uma unidade de atendimento",
   }),
   date: z.date({
@@ -67,8 +66,21 @@ interface AppointmentSchedulerProps {
   onScheduled: () => void;
 }
 
-const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({ 
-  isOpen, 
+type Doctor = {
+  specialty: string;
+  doctorName: string;
+  doctorId: string;
+};
+
+type Location = {
+  locationId: string;
+  locationName: string;
+  locationAddress: string;
+  locationCity: string;
+}
+
+const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
+  isOpen,
   onClose,
   onScheduled
 }) => {
@@ -77,106 +89,144 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
   const [availableDoctors, setAvailableDoctors] = useState<Doctor[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
-  const [specialties, setSpecialties] = useState<string[]>([]);
-  
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [specialties, setSpecialities] = useState<string[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+
   // Load specialties on component mount
   useEffect(() => {
-    const loadSpecialties = async () => {
-      try {
-        const fetchedSpecialties = await getSpecialties();
-        setSpecialties(fetchedSpecialties);
-      } catch (error) {
-        console.error("Error loading specialties:", error);
-        toast.error("Erro ao carregar especialidades");
+
+    resetForm()
+
+    async function loadData() {
+      const authToken = localStorage.getItem('authToken');
+  
+      if (!authToken) {
+        toast.error('Token não encontrado.');
+        return;
       }
-    };
-    
+  
+      try {
+        const doctorsResponse = await axios.get<Doctor[]>('https://elderly-care.onrender.com/doctor', {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+
+  
+        const locationsResponse = await axios.get<Location[]>('https://elderly-care.onrender.com/location', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+  
+        const doctors = doctorsResponse.data;
+        const locations = locationsResponse.data
+        const specialtiesSet = new Set(doctors.map(doc => doc.specialty));
+
+        setLocations(locations);
+        setDoctors(doctors);
+        setSpecialities(Array.from(specialtiesSet));
+
+        console.log(locations)
+
+      } catch (error) {
+        toast.error("Erro ao carregar consultas");
+      }
+    }
+  
     if (isOpen) {
-      loadSpecialties();
+      loadData();
     }
   }, [isOpen]);
   
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
   // Handle specialty selection
   const handleSpecialtyChange = async (value: string) => {
+   
     setSelectedSpecialty(value);
     form.setValue("specialty", value);
-    
+
     try {
-      const filteredDoctors = await getDoctorsBySpecialty(value);
-      setAvailableDoctors(filteredDoctors);
+      setAvailableDoctors(doctors.filter(doctor => doctor.specialty === selectedSpecialty));
     } catch (error) {
-      console.error("Error loading doctors:", error);
       toast.error("Erro ao carregar médicos");
     }
-    
+
     // Reset doctor and date selections
     form.setValue("doctorId", undefined as any);
     form.resetField("date");
     setSelectedDate(undefined);
   };
-  
+
   // Handle date selection
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
       form.setValue("date", date);
-      
+
       // Get available time slots for this date
       const slots = getAvailableTimeSlots(date);
       setTimeSlots(slots);
-      
+
       // Reset time slot selection
       form.resetField("timeSlotId");
     }
+   
   };
-  
+
   // Handle form submission
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    // Find selected doctor and location
-    const doctor = availableDoctors.find(doc => doc.id === data.doctorId);
-    const location = locations.find(loc => loc.id === data.locationId);
+    const doctor = availableDoctors.find(doc => doc.doctorId === data.doctorId);
+    const location = locations.find(loc => loc.locationId === data.locationId);
     const timeSlot = timeSlots.find(slot => slot.id === data.timeSlotId);
-    
+  
     if (!doctor || !location || !timeSlot) {
       toast.error("Erro ao agendar consulta. Dados inválidos.");
       return;
     }
-    
-    // Format date for storage
+  
     const formattedDate = format(data.date, 'yyyy-MM-dd');
-    
+    const createdAt = new Date().toISOString(); // data atual
+  
+    const payload = {
+      doctorId: doctor.doctorId,
+      locationId: location.locationId,
+      date: formattedDate,
+      time: timeSlot.time,
+      createdAt,
+    };
+  
     try {
-      // Save appointment
-      const appointment = await saveAppointment({
-        doctorId: doctor.id,
-        doctorName: doctor.doctorName,
-        specialty: doctor.specialty,
-        locationId: location.id,
-        locationName: location.locationName,
-        locationAddress: location.locationAddress,
-        date: formattedDate,
-        time: timeSlot.time,
-        confirmed: false,
-      });
-      
-      if (appointment) {
-        toast.success("Consulta agendada com sucesso!");
-        resetForm();
-        onScheduled();
-        onClose();
-      } else {
-        toast.error("Erro ao agendar consulta.");
+      const authToken = localStorage.getItem('authToken');
+  
+      if (!authToken) {
+        toast.error("Token não encontrado.");
+        return;
       }
+  
+      await axios.post("https://elderly-care.onrender.com/appointment", payload, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      toast.success("Consulta agendada com sucesso!");
+      resetForm();
+      onScheduled();
+      onClose();
+  
     } catch (error) {
-      console.error("Error scheduling appointment:", error);
+      console.error("Erro ao enviar agendamento:", error);
       toast.error("Erro ao agendar consulta.");
     }
-  };
-  
+  };  
+
   // Reset the form and state
   const resetForm = () => {
     form.reset();
@@ -186,7 +236,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
     setSelectedDate(undefined);
     setTimeSlots([]);
   };
-  
+
   // Handle moving to next step
   const nextStep = () => {
     if (step === 1) {
@@ -204,19 +254,19 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
         return;
       }
     }
-    
+
     setStep(step + 1);
   };
-  
+
   // Handle going back to previous step
   const prevStep = () => {
     setStep(step - 1);
   };
-  
+
   if (!isOpen) {
     return null;
   }
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -228,7 +278,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
             {step === 3 && "Confirme os detalhes do agendamento."}
           </DialogDescription>
         </DialogHeader>
-        
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {step === 1 && (
@@ -240,7 +290,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Especialidade</FormLabel>
-                      <Select 
+                      <Select
                         onValueChange={(value) => handleSpecialtyChange(value)}
                         defaultValue={field.value}
                       >
@@ -261,7 +311,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Doctor selection */}
                 <FormField
                   control={form.control}
@@ -269,9 +319,9 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Profissional</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        value={field.value?.toString()}
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value ?? ""}
                         disabled={!selectedSpecialty}
                       >
                         <FormControl>
@@ -281,7 +331,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                         </FormControl>
                         <SelectContent>
                           {availableDoctors.map((doctor) => (
-                            <SelectItem key={doctor.id} value={doctor.id.toString()}>
+                            <SelectItem key={doctor.doctorId} value={doctor.doctorId}>
                               {doctor.doctorName}
                             </SelectItem>
                           ))}
@@ -291,7 +341,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Location selection */}
                 <FormField
                   control={form.control}
@@ -299,11 +349,11 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Unidade de Atendimento</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        value={field.value?.toString()}
-                        disabled={!selectedSpecialty}
-                      >
+                      <Select
+                            onValueChange={field.onChange}
+                            value={field.value ?? ""}
+                            disabled={!selectedSpecialty}
+                          >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione uma unidade" />
@@ -311,9 +361,9 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                         </FormControl>
                         <SelectContent>
                           {locations.map((location) => (
-                            <SelectItem key={location.id} value={location.id.toString()}>
-                              {location.locationName} - {location.locationAddress}
-                            </SelectItem>
+                            <SelectItem key={location.locationId} value={location.locationId}>
+                            {location.locationName} - {location.locationAddress}
+                          </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -323,7 +373,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                 />
               </div>
             )}
-            
+
             {step === 2 && (
               <div className="space-y-4">
                 {/* Date selection */}
@@ -337,7 +387,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                         mode="single"
                         selected={field.value}
                         onSelect={handleDateSelect}
-                        disabled={(date) => 
+                        disabled={(date) =>
                           date < new Date() || // Disable past dates
                           date.getDay() === 0 || // Disable Sundays
                           date.getDay() === 6    // Disable Saturdays
@@ -349,7 +399,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Time slot selection */}
                 <FormField
                   control={form.control}
@@ -357,7 +407,7 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Horário</FormLabel>
-                      <Select 
+                      <Select
                         onValueChange={(value) => field.onChange(parseInt(value))}
                         value={field.value?.toString()}
                         disabled={!selectedDate}
@@ -388,50 +438,50 @@ const AppointmentScheduler: React.FC<AppointmentSchedulerProps> = ({
                 />
               </div>
             )}
-            
+
             {step === 3 && (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Confirme os detalhes da consulta:</h3>
-                
+
                 {(() => {
                   const values = form.getValues();
-                  const doctor = availableDoctors.find(doc => doc.id === values.doctorId);
-                  const location = locations.find(loc => loc.id === values.locationId);
+                  const doctor = availableDoctors.find(doc => doc.doctorId === values.doctorId);
+                  const location = locations.find(loc => loc.locationId === values.locationId);                  
                   const timeSlot = timeSlots.find(slot => slot.id === values.timeSlotId);
-                  
+
                   return (
                     <div className="space-y-2 text-sm">
                       <p><span className="font-semibold">Especialidade:</span> {values.specialty}</p>
                       <p><span className="font-semibold">Profissional:</span> {doctor?.doctorName}</p>
                       <p><span className="font-semibold">Local:</span> {location?.locationName}</p>
                       <p><span className="font-semibold">Endereço:</span> {location?.locationAddress}, {location?.locationCity}</p>
-                      <p><span className="font-semibold">Data:</span> {values.date ? format(values.date, "dd 'de' MMMM 'de' yyyy", {locale: ptBR}) : ''}</p>
+                      <p><span className="font-semibold">Data:</span> {values.date ? format(values.date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : ''}</p>
                       <p><span className="font-semibold">Horário:</span> {timeSlot?.time}</p>
                     </div>
                   );
                 })()}
               </div>
             )}
-            
+
             <DialogFooter className="flex flex-col sm:flex-row gap-2">
               {step > 1 && (
                 <Button type="button" variant="outline" onClick={prevStep}>
                   Voltar
                 </Button>
               )}
-              
+
               {step < 3 && (
                 <Button type="button" onClick={nextStep}>
                   Próximo
                 </Button>
               )}
-              
+
               {step === 3 && (
                 <Button type="submit" className="bg-care-purple hover:bg-care-light-purple">
                   Confirmar Agendamento
                 </Button>
               )}
-              
+
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancelar
               </Button>

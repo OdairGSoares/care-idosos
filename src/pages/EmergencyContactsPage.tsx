@@ -24,6 +24,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import axios from 'axios';
+
 const EmergencyContactsPage = () => {
   const [contacts, setContacts] = useState<EmergencyContact[]>([]);
   const [isAddingContact, setIsAddingContact] = useState(false);
@@ -34,13 +36,26 @@ const EmergencyContactsPage = () => {
   // Carregar contatos ao inicializar
   useEffect(() => {
     loadContacts();
-  }, []);
+  }, [isAddingContact, editingContact, deletingContactId]);
 
   const loadContacts = async () => {
     try {
       setIsLoading(true);
-      const loadedContacts = await getEmergencyContacts();
-      setContacts(loadedContacts);
+      async function loadContacts() {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+          console.error('Token de autenticação não encontrado.');
+          return;
+        }
+        const contacts = await axios.get('https://elderly-care.onrender.com/contacts', {
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          }
+        });
+        setContacts(contacts.data);
+      }
+  
+      loadContacts()
     } catch (error) {
       console.error("Error loading contacts:", error);
       toast.error("Erro ao carregar contatos");
@@ -50,48 +65,101 @@ const EmergencyContactsPage = () => {
   };
 
   const handleAddContact = async (data: Omit<EmergencyContact, 'id'>) => {
-    try {
-      const newContact = await addEmergencyContact(data);
-      if (newContact) {
-        await loadContacts();
+
+    async function addContact() {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+    
+
+      try {
+        await axios.post(
+          'https://elderly-care.onrender.com/contacts',
+          data,
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          }
+        );
         setIsAddingContact(false);
         toast.success('Contato adicionado com sucesso!');
+      } catch (error) {
+        console.error("Error adding contact:", error);
+        toast.error("Erro ao adicionar contato");
       }
-    } catch (error) {
-      console.error("Error adding contact:", error);
-      toast.error("Erro ao adicionar contato");
     }
+
+    addContact()
   };
 
   const handleEditContact = async (data: Omit<EmergencyContact, 'id'>) => {
     if (editingContact) {
-      try {
-        const updated = await updateEmergencyContact({ ...data, id: editingContact.id });
-        if (updated) {
-          await loadContacts();
+
+      async function editContact() {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+          console.error('Token de autenticação não encontrado.');
+          return;
+        }
+      
+        try {
+          await axios.put(
+            `https://elderly-care.onrender.com/contacts/${editingContact.id}`,
+            data,
+            {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            }
+          );
           setEditingContact(null);
           toast.success('Contato atualizado com sucesso!');
+        } catch (error) {
+          console.error("Error updating contact:", error);
+          toast.error("Erro ao atualizar contato");
         }
-      } catch (error) {
-        console.error("Error updating contact:", error);
-        toast.error("Erro ao atualizar contato");
       }
+  
+      editContact()
+
     }
   };
 
   const handleDeleteContact = async () => {
     if (deletingContactId !== null) {
-      try {
-        const deleted = await deleteEmergencyContact(deletingContactId);
-        if (deleted) {
-          await loadContacts();
+      deleteEmergencyContact(deletingContactId)
+      setDeletingContactId(null);
+      toast.success('Contato removido com sucesso!');
+      /*
+      async function deleteContact() {
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+          console.error('Token de autenticação não encontrado.');
+          return;
+        }
+      
+        try {
+          await axios.put(
+            `https://elderly-care.onrender.com/contacts/${deletingContactId}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${authToken}`
+              }
+            }
+          );
           setDeletingContactId(null);
           toast.success('Contato removido com sucesso!');
+        } catch (error) {
+          console.error("Error deleting contact:", error);
+          toast.error("Erro ao remover contato");
         }
-      } catch (error) {
-        console.error("Error deleting contact:", error);
-        toast.error("Erro ao remover contato");
       }
+  
+      deleteContact()
+      */
     }
   };
 
@@ -118,7 +186,7 @@ const EmergencyContactsPage = () => {
 
         <Sheet open={isAddingContact} onOpenChange={setIsAddingContact}>
           <SheetTrigger asChild>
-            <Button className="bg-care-purple hover:bg-care-light-purple text-senior">
+            <Button className="bg-care-purple hover:bg-care-light-purple text-white">
               <Plus className="mr-2 h-4 w-4" />
               Adicionar Contato
             </Button>

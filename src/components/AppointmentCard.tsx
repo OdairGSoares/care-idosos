@@ -66,7 +66,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
             <div>
               <p className="text-senior font-medium">
                 {appointmentDate.toLocaleDateString('pt-BR')}
-                <span className="text-care-purple ml-2">({timeUntilAppointment})</span>
+                <span className="text-care-purple ml-1">({timeUntilAppointment})</span>
               </p>
             </div>
           </div>
@@ -83,25 +83,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
               <p className="text-gray-500">{appointment.locationAddress}</p>
             </div>
           </div>
-          
-          {!appointment.confirmed && (
-            <div className="flex gap-2 mt-4">
-              <Button 
-                variant="outline" 
-                className="flex-1 border-care-purple text-care-purple hover:bg-care-light-purple/20"
-                onClick={() => onReschedule && onReschedule(appointment)}
-              >
-                Reagendar
-              </Button>
-              <Button 
-                className="flex-1 bg-care-purple hover:bg-care-light-purple"
-                onClick={() => onConfirm && onConfirm(appointment.id)}
-              >
-                Confirmar Presença
-              </Button>
-            </div>
-          )}
-          
+
           {appointment.confirmed && (
             <div className="flex items-center justify-center p-2 bg-green-100 text-green-600 rounded-md">
               <span>Presença Confirmada</span>

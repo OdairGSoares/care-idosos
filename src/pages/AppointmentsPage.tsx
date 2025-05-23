@@ -8,57 +8,98 @@ import AppointmentsList from '@/components/AppointmentsList';
 import AppointmentScheduler from '@/components/AppointmentScheduler';
 import { Appointment, getAppointments, confirmAppointment } from '@/utils/appointmentUtils';
 import { toast } from 'sonner';
-
+import axios from 'axios';
 const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  const [pastAppointments, setPastAppointments] = useState<Appointment[]>([]);
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("upcoming");
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Fetch appointments on mount and when they change
   useEffect(() => {
     loadAppointments();
   }, []);
-  
+
+  // Load appointments from API
+  useEffect(() => {
+    loadAppointments();
+  }, []);
+
   // Load appointments from API
   const loadAppointments = async () => {
+
+    const authToken = localStorage.getItem('authToken');
+
+    if (!authToken) {
+      toast.error('Token não encontrado.');
+      return;
+    }
+
     try {
-      setIsLoading(true);
-      const loadedAppointments = await getAppointments();
-      setAppointments(loadedAppointments);
+      const response = await axios.get('https://elderly-care.onrender.com/appointment', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+    
+      const appointments = response.data;
+      setAppointments(appointments);
+      console.log(appointments)
+      const now = new Date();
+    
+      function parseDateTime(dateStr, timeStr) {
+        let [day, month, year] = [null, null, null];
+      
+        if (dateStr.includes('/')) {
+          // Formato dd/MM/yyyy
+          [day, month, year] = dateStr.split('/');
+        } else if (dateStr.includes('-')) {
+          // Formato yyyy-MM-dd
+          [year, month, day] = dateStr.split('-');
+        }
+      
+        // Monta a string ISO para garantir consistência
+        const isoString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timeStr}:00`;
+        return new Date(isoString);
+      }
+      
+      const upcoming = appointments.filter(app => {
+        const appointmentDate = parseDateTime(app.date, app.time);
+        return appointmentDate >= now;
+      });
+      
+      const past = appointments.filter(app => {
+        const appointmentDate = parseDateTime(app.date, app.time);
+        return appointmentDate < now;
+      });
+
+      setUpcomingAppointments(upcoming);
+      setPastAppointments(past);
+
     } catch (error) {
-      console.error("Error loading appointments:", error);
       toast.error("Erro ao carregar consultas");
     } finally {
       setIsLoading(false);
     }
+
   };
-  
-  // Filter appointments by status (upcoming or past)
-  const upcomingAppointments = appointments.filter(app => {
-    const appointmentDate = new Date(`${app.date}T${app.time}`);
-    return appointmentDate >= new Date();
-  });
-  
-  const pastAppointments = appointments.filter(app => {
-    const appointmentDate = new Date(`${app.date}T${app.time}`);
-    return appointmentDate < new Date();
-  });
-  
+
   // Get the next appointment
-  const nextAppointment = upcomingAppointments.length > 0 
+  const nextAppointment = upcomingAppointments.length > 0
     ? upcomingAppointments.sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
-        return dateA.getTime() - dateB.getTime();
-      })[0]
+      const dateA = new Date(`${a.date}T${a.time}`);
+      const dateB = new Date(`${b.date}T${b.time}`);
+      return dateA.getTime() - dateB.getTime();
+    })[0]
     : null;
 
   // Handle confirming appointment from card
   const handleConfirmAppointment = async (id: number) => {
     try {
       const success = await confirmAppointment(id);
-      
+
       if (success) {
         toast.success("Presença confirmada com sucesso!");
         await loadAppointments();
@@ -77,7 +118,7 @@ const AppointmentsPage = () => {
     // For now, just open the reschedule dialog in the list
     setActiveTab("upcoming");
   };
-  
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -85,7 +126,7 @@ const AppointmentsPage = () => {
           <h1 className="text-2xl font-bold mb-1">Consultas</h1>
           <p className="text-gray-500">Gerencie suas consultas médicas</p>
         </div>
-        <Button 
+        <Button
           onClick={() => setIsSchedulerOpen(true)}
           className="bg-care-purple hover:bg-care-light-purple"
         >
@@ -93,18 +134,18 @@ const AppointmentsPage = () => {
           Nova Consulta
         </Button>
       </div>
-      
+
       {/* Show next appointment card if available */}
       <div className="mb-6">
-        <AppointmentCard 
+        <AppointmentCard
           appointment={nextAppointment}
           onReschedule={handleRescheduleClick}
           onConfirm={handleConfirmAppointment}
         />
       </div>
-      
-      <Tabs 
-        value={activeTab} 
+
+      <Tabs
+        value={activeTab}
         onValueChange={setActiveTab}
         className="w-full"
       >
@@ -118,22 +159,22 @@ const AppointmentsPage = () => {
             Passadas
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="upcoming" className="mt-0">
-          <AppointmentsList 
-            appointments={upcomingAppointments} 
-            onUpdate={loadAppointments} 
+          <AppointmentsList
+            appointments={upcomingAppointments}
+            onUpdate={loadAppointments}
           />
         </TabsContent>
-        
+
         <TabsContent value="past" className="mt-0">
-          <AppointmentsList 
-            appointments={pastAppointments} 
-            onUpdate={loadAppointments} 
+          <AppointmentsList
+            appointments={pastAppointments}
+            onUpdate={loadAppointments}
           />
         </TabsContent>
       </Tabs>
-      
+
       {/* Appointment Scheduler Dialog */}
       <AppointmentScheduler
         isOpen={isSchedulerOpen}

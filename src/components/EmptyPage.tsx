@@ -12,7 +12,7 @@ interface EmptyPageProps {
   backLink?: string;
 }
 
-const EmptyPage = ({ title, description, icon, backLink = "/" }: EmptyPageProps) => {
+const EmptyPage = ({ title, description, icon, backLink = "/dashboard" }: EmptyPageProps) => {
   return (
     <div className="care-container py-10 flex flex-col items-center">
       <Card className="w-full max-w-md shadow-md">

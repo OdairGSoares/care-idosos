@@ -69,7 +69,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8 max-w-full overflow-x-hidden">
+    <div className="container mx-auto px-4 py-6 max-w-4xl">
       <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center">
           <div className="mr-4 rounded-full bg-primary/10 p-2">

@@ -134,7 +134,7 @@ const HealthDataChart: React.FC<HealthDataChartProps> = ({ data, type, onAddClic
   }
 
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 overflow-x-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center">
           {config.icon}
@@ -143,7 +143,7 @@ const HealthDataChart: React.FC<HealthDataChartProps> = ({ data, type, onAddClic
         <CardDescription>Últimos 7 dias</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-[250px]">
+        <div>
           <ChartContainer config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>

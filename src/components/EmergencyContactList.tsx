@@ -24,21 +24,21 @@ const EmergencyContactList = ({ contacts, onEdit, onDelete, isLoading }: Emergen
 
   // Function to handle delete with loading state
   const handleDelete = async (id: number) => {
-    if (window.confirm("Tem certeza que deseja excluir este contato?")) {
+   
       setDeletingId(id);
       try {
-        const success = await deleteEmergencyContact(id);
-        if (success) {
+        //const success = await deleteEmergencyContact(id);
+        //if (success) {
           onDelete(id);
-          toast.success("Contato excluído com sucesso");
-        }
+          
+        //}
       } catch (error) {
         console.error("Erro ao excluir contato:", error);
         toast.error("Erro ao excluir contato");
       } finally {
         setDeletingId(null);
       }
-    }
+ 
   };
 
   if (isLoading) {

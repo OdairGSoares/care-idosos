@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar, Clock, MapPin, Check, Calendar as CalendarIcon, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+
 import {
   Dialog,
   DialogContent,
@@ -36,8 +37,11 @@ import {
   getAvailableTimeSlots, 
   rescheduleAppointment, 
   confirmAppointment,
-  cancelAppointment
+  cancelAppointment,
+  deleteAppointment
 } from '@/utils/appointmentUtils';
+
+import axios from 'axios';
 
 interface AppointmentsListProps {
   appointments: Appointment[];
@@ -93,46 +97,121 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
     
     const formattedDate = format(newDate, 'yyyy-MM-dd');
     
-    // Update the appointment
-    const success = rescheduleAppointment(selectedAppointment.id, formattedDate, newTime);
-    
-    if (success) {
-      toast.success("Consulta reagendada com sucesso!");
-      setRescheduleDialogOpen(false);
-      onUpdate();
-    } else {
-      toast.error("Erro ao reagendar consulta. Tente novamente.");
+    async function RescheduleAppointment() {
+
+      if (!selectedAppointment.id) {
+        toast.error("Erro ao identificar a consulta.");
+        return;
+      }
+
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+
+      const payload = {
+        time: String(newTime),
+        doctorId: String(selectedAppointment.doctorId),
+        locationId: String(selectedAppointment.locationId),
+        date: String(formattedDate),
+        createdAt: String(Date.now()),
+      }
+
+      console.log(payload)
+
+      try {
+        await axios.put(
+          `https://elderly-care.onrender.com/appointment/${selectedAppointment.id}`, payload,
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          }
+        );
+        toast.success("Consulta reagendada com sucesso!");
+        setRescheduleDialogOpen(false);
+        onUpdate();
+      } catch (error) {
+        toast.error("Erro ao reagendar consulta. Tente novamente.");
+        setRescheduleDialogOpen(false);
+        onUpdate();
+      } 
     }
+    
+    RescheduleAppointment();
+
   };
 
   // Handle appointment cancellation
   const handleCancelConfirm = () => {
-    if (!selectedAppointment) {
-      toast.error("Erro ao identificar a consulta.");
-      return;
+
+    async function deleteAppointment() {
+
+      if (!selectedAppointment) {
+        toast.error("Erro ao identificar a consulta.");
+        return;
+      }
+
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+
+      try {
+        await axios.delete(
+          `https://elderly-care.onrender.com/appointment/${selectedAppointment.id}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          }
+        );
+        toast.success('Consulta cancelada com sucesso!');
+      } catch (error) {
+        toast.error('Erro ao remover consulta.');
+      } 
     }
-    
-    const success = cancelAppointment(selectedAppointment.id);
-    
-    if (success) {
-      toast.success("Consulta cancelada com sucesso!");
-      setCancelDialogOpen(false);
-      onUpdate();
-    } else {
-      toast.error("Erro ao cancelar consulta. Tente novamente.");
-    }
+
+    deleteAppointment();
+    setCancelDialogOpen(false);
+    onUpdate();
   };
   
   // Handle appointment confirmation
   const handleConfirmAppointment = (id: number) => {
-    const success = confirmAppointment(id);
-    
-    if (success) {
-      toast.success("Presença confirmada com sucesso!");
-      onUpdate();
-    } else {
-      toast.error("Erro ao confirmar presença. Tente novamente.");
+    async function confirmAppointment() {
+
+      if (!id) {
+        toast.error("Erro ao identificar a consulta.");
+        return;
+      }
+
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+
+      try {
+        await axios.put(
+          `https://elderly-care.onrender.com/appointment/confirmed/${id}`,
+          {confirmed: true},
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          }
+        );
+        toast.success('Presença confirmada com sucesso!');
+        onUpdate();
+      } catch (error) {
+        toast.error('Erro ao confirmar consulta.');
+      } 
     }
+    
+    confirmAppointment();
   };
   
   // Sort appointments by date (most recent first)
@@ -162,13 +241,13 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
                 <div className="flex items-center">
                   <Calendar className="h-5 w-5 text-care-purple mr-2" />
                   <p className="text-senior">
-                    {format(parseISO(appointment.date), "dd 'de' MMMM 'de' yyyy", {locale: ptBR})}
+                  {format(addDays(new Date(appointment.date.split('/').reverse().join('-')), 1), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                   </p>
                 </div>
                 
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 text-care-purple mr-2" />
-                  <p className="text-senior">{appointment.time}</p>
+                  <p className="text-senior">{format(new Date(`2000-01-01T${appointment.time}`), 'HH:mm', { locale: ptBR })}</p>
                 </div>
                 
                 <div className="flex items-start">

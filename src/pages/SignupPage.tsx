@@ -1,16 +1,16 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, Mail, Lock, User, Phone } from 'lucide-react';
+import { Home, Mail, Lock, User, Phone, Axis3D } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { toast } from "sonner";
+import axios from "axios"
 
 interface UserData {
-  firstName: string;
-  lastName: string;
+  userFirstName: string;
+  userLastName: string;
   email: string;
   phone: string;
   password: string;
@@ -19,8 +19,8 @@ interface UserData {
 const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<UserData>({
-    firstName: '',
-    lastName: '',
+    userFirstName: '',
+    userLastName: '',
     email: '',
     phone: '',
     password: ''
@@ -36,11 +36,11 @@ const SignupPage = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validação básica
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password) {
+    if (!formData.userFirstName || !formData.userLastName || !formData.email || !formData.phone || !formData.password) {
       toast.error("Por favor, preencha todos os campos");
       return;
     }
@@ -55,21 +55,26 @@ const SignupPage = () => {
       return;
     }
     
-    // Verificar se o email já foi registrado
-    const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    const userExists = existingUsers.some((user: UserData) => user.email === formData.email);
-    
-    if (userExists) {
-      toast.error("Este email já está cadastrado");
-      return;
+    try{
+/*
+      const checkEmail = await axios.get('https://elderly-care.onrender.com/user');
+      const emailExists = checkEmail.data.some((user: UserData) => user.email === formData.email);
+      
+      if (emailExists) {
+        toast.error("E-mail já cadastrado.");
+        return;
+      }
+*/
+      axios.post('https://elderly-care.onrender.com/user/sign-up', formData).then(response=>{
+        toast.success("Cadastro realizado com sucesso!")
+        navigate('/login');
+      })
+          
+    } catch (error) {
+      toast.error("Erro ao processar o cadastro.");
+      console.error(error);
     }
-    
-    // Salvar usuário no localStorage
-    const updatedUsers = [...existingUsers, formData];
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-    
-    toast.success("Cadastro realizado com sucesso!");
-    navigate('/login');
+
   };
 
   return (
@@ -106,7 +111,7 @@ const SignupPage = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 text-senior">
+                    <label htmlFor="userFirstName" className="block text-sm font-medium text-gray-700 text-senior">
                       Nome
                     </label>
                     <div className="relative">
@@ -114,24 +119,24 @@ const SignupPage = () => {
                         <User className="h-5 w-5" />
                       </span>
                       <Input 
-                        id="firstName" 
+                        id="userFirstName" 
                         placeholder="Seu nome" 
                         className="pl-10 text-senior h-12" 
-                        value={formData.firstName}
+                        value={formData.userFirstName}
                         onChange={handleInputChange}
                       />
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 text-senior">
+                    <label htmlFor="userLastName" className="block text-sm font-medium text-gray-700 text-senior">
                       Sobrenome
                     </label>
                     <Input 
-                      id="lastName" 
+                      id="userLastName" 
                       placeholder="Seu sobrenome" 
                       className="text-senior h-12"
-                      value={formData.lastName}
+                      value={formData.userLastName}
                       onChange={handleInputChange}
                     />
                   </div>

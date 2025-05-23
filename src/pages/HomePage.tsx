@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { User } from 'lucide-react';
 import MedicationReminder from '@/components/MedicationReminder';
 import AppointmentCard from '@/components/AppointmentCard';
 import LocationTracker from '@/components/LocationTracker';
 import { getAppointments, confirmAppointment, Appointment } from '@/utils/appointmentUtils';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 const HomePage = () => {
   // Sample user data
@@ -19,41 +21,68 @@ const HomePage = () => {
   
   // Fetch the next appointment on component mount
   useEffect(() => {
-    loadNextAppointment();
+    loadAppointments();
   }, []);
   
-  // Load the next upcoming appointment
-  const loadNextAppointment = async () => {
+  const loadAppointments = async () => {
+    const authToken = localStorage.getItem('authToken');
+  
+    if (!authToken) {
+      toast.error('Token não encontrado.');
+      return;
+    }
+  
     try {
-      setIsLoading(true);
-      const appointments = await getAppointments();
-      
-      // Filter for upcoming appointments only
-      const upcomingAppointments = appointments.filter(app => {
-        const appointmentDate = new Date(`${app.date}T${app.time}`);
-        return appointmentDate >= new Date();
+      const response = await axios.get('https://elderly-care.onrender.com/appointment', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
-      
-      // Sort by date (earliest first) and get the first one
-      if (upcomingAppointments.length > 0) {
-        const sortedAppointments = upcomingAppointments.sort((a, b) => {
-          const dateA = new Date(`${a.date}T${a.time}`);
-          const dateB = new Date(`${b.date}T${b.time}`);
-          return dateA.getTime() - dateB.getTime();
-        });
-        
-        setNextAppointment(sortedAppointments[0]);
-      } else {
-        setNextAppointment(null);
+  
+      const appointments = response.data;
+      const now = new Date();
+  
+      const parseDateTime = (dateStr: string, timeStr: string): Date => {
+        let day: string, month: string, year: string;
+  
+        if (dateStr.includes('/')) {
+          [day, month, year] = dateStr.split('/');
+        } else if (dateStr.includes('-')) {
+          [year, month, day] = dateStr.split('-');
+        } else {
+          throw new Error(`Formato de data inválido: ${dateStr}`);
+        }
+  
+        return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timeStr.padStart(5, '0')}:00`);
+      };
+  
+      let closestAppointment = null;
+      let closestTimeDiff = Infinity;
+  
+      for (const app of appointments) {
+        try {
+          const appointmentDate = parseDateTime(app.date, app.time);
+          const diff = appointmentDate.getTime() - now.getTime();
+  
+          if (diff >= 0 && diff < closestTimeDiff) {
+            closestTimeDiff = diff;
+            closestAppointment = app;
+          }
+        } catch (e) {
+          console.warn(`Erro ao processar agendamento inválido: ${app.date} ${app.time}`, e);
+        }
       }
+  
+      setNextAppointment(closestAppointment);
+      
     } catch (error) {
-      console.error("Error loading appointments:", error);
+      console.error(error);
       toast.error("Erro ao carregar próxima consulta");
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   // Handle confirming appointment
   const handleConfirmAppointment = async (id: number) => {
     try {
@@ -61,7 +90,7 @@ const HomePage = () => {
       
       if (success) {
         toast.success("Presença confirmada com sucesso!");
-        await loadNextAppointment(); // Refresh appointment data
+        await loadAppointments(); // Refresh appointment data
       } else {
         toast.error("Erro ao confirmar presença. Tente novamente.");
       }
@@ -92,7 +121,7 @@ const HomePage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <MedicationReminder />
         <div className="space-y-6">
-          <AppointmentCard 
+          <AppointmentCard
             appointment={nextAppointment}
             onReschedule={handleRescheduleClick}
             onConfirm={handleConfirmAppointment}
@@ -101,16 +130,17 @@ const HomePage = () => {
         </div>
       </div>
       
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <Button className="bg-care-purple hover:bg-care-light-purple h-16 text-senior" size="lg">
-          Agendar Consulta
-        </Button>
-        <Button className="bg-care-teal hover:bg-care-dark-teal h-16 text-senior" size="lg">
-          Pedir Medicamentos
-        </Button>
-        <Button className="bg-care-light-purple hover:bg-care-purple h-16 text-senior" size="lg">
+      <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+        <Link to="/dashboard/appointments">
+          <Button className="bg-care-teal hover:bg-care-dark-teal h-16 text-senior w-full" size="lg">
+            Agendar Consulta
+          </Button>
+        </Link>
+        <Link to="/dashboard/profile">
+        <Button className="bg-care-light-purple hover:bg-care-purple h-16 text-senior w-full text-white" size="lg">
           Serviços de Saúde
         </Button>
+        </Link>
       </div>
     </div>
   );

@@ -1,28 +1,35 @@
 
 import React from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Pill, Check, Clock, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
-
+import axios from 'axios';
 // Sample medication data
-const medications = [
-  { id: 1, name: 'Losartana', dosage: '50mg', time: '08:00', taken: false },
-  { id: 2, name: 'Metformina', dosage: '500mg', time: '13:00', taken: false },
-  { id: 3, name: 'Atorvastatina', dosage: '20mg', time: '20:00', taken: false },
-];
 
 const MedicationReminder = () => {
-  const [meds, setMeds] = React.useState(medications);
+  const [meds, setMeds] = React.useState([]);
   
-  React.useEffect(() => {
-    // Load medications from localStorage if available
-    const savedMeds = localStorage.getItem('medications');
-    if (savedMeds) {
-      setMeds(JSON.parse(savedMeds));
+  useEffect(()=>{
+    async function loadMedication() {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.error('Token de autenticação não encontrado.');
+        return;
+      }
+      const medications = await axios.get('https://elderly-care.onrender.com/medication', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      });
+      setMeds(medications.data)
     }
-  }, []);
+
+    loadMedication()
+  })
+
   
   const markAsTaken = (id: number) => {
     const updatedMeds = meds.map(med => 
@@ -74,34 +81,7 @@ const MedicationReminder = () => {
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
-                  {!medication.taken ? (
-                    <>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="text-care-teal border-care-teal"
-                        onClick={() => setupReminder(medication.id)}
-                      >
-                        <Bell className="h-4 w-4 mr-1" />
-                        <span className="hidden sm:inline">Lembrete</span>
-                      </Button>
-                      <Button 
-                        size="sm"
-                        className="bg-care-teal hover:bg-care-dark-teal"
-                        onClick={() => markAsTaken(medication.id)}
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        <span className="hidden sm:inline">Tomado</span>
-                      </Button>
-                    </>
-                  ) : (
-                    <span className="text-green-600 font-medium flex items-center">
-                      <Check className="h-4 w-4 mr-1" />
-                      Tomado
-                    </span>
-                  )}
-                </div>
+                
               </div>
             ))
           ) : (
