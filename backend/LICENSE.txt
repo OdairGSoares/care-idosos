@@ -1,0 +1,18 @@
+MIT License
+
+Copyright (c) 2024 PROJETO INTEGRADOR: DESENVOLVIMENTO DE SISTEMAS ORIENTADO A DISPOSITIVOS MÓVEIS E BASEADOS NA WEB - Faculdade SENAC - Integrantes:
+- BEATRIZ RIBEIRO DOS SANTOS
+- ELISABETE ALVES DOS SANTOS
+- KARENN SOUZA BUENO DE AZEVEDO
+- KELVEN MARTINS DA ROSA
+- KEVIN LOGAN GOMES PIRES
+- MARLU PATROCINIO RAMOS DA SILVA
+- ODAIR GOMES SOARES
+
+Este projeto, "Care Idosos", foi desenvolvido como parte de um trabalho acadêmico para a Faculdade SENAC. A licença abaixo permite que o código seja utilizado, modificado e redistribuído livremente, com a condição de que a mesma licença seja incluída nas cópias do código-fonte ou partes substanciais dele.
+
+Permissão é concedida, de forma gratuita, a qualquer pessoa que obtenha uma cópia deste software e arquivos de documentação associados, incluindo, sem limitação, os direitos de usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e/ou vender cópias do Software, e para permitir que as pessoas a quem o Software é fornecido o façam, sujeito às seguintes condições:
+
+O aviso de copyright acima e este aviso de permissão devem ser incluídos em todas as cópias ou partes substanciais do Software.
+
+O Software é fornecido "no estado em que se encontra", sem qualquer tipo de garantia expressa ou implícita, incluindo, mas não se limitando a, garantias de comercialização, adequação a um propósito específico e não violação. Em nenhum caso os autores ou titulares do copyright serão responsáveis por qualquer reclamação, dano ou outra responsabilidade, seja em uma ação de contrato, ato ilícito ou de outro tipo, decorrente de, fora de ou em conexão com o Software ou o uso ou outros negócios no Software.
