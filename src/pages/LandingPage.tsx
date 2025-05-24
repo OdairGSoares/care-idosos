@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowRight, Calendar, Clock, Ambulance } from 'lucide-react';
 import Logo from '@/components/Logo';
+import LandingImage from '@/assets/doctor-helping-woman.jpg'
 
 const LandingPage = () => {
   return (
@@ -13,7 +14,7 @@ const LandingPage = () => {
         <div className="flex items-center">
           <Logo />
           <span className="ml-3 text-xl font-bold">Care Idosos</span>
-          <span className="text-xs text-gray-500 ml-2 hidden md:block">Cuidando de quem cuidou</span>
+          <span className="text-xs text-gray-500 ml-2 mt-1 hidden md:block">Cuidando de quem cuidou</span>
         </div>
         
         <div className="flex items-center gap-4">
@@ -53,7 +54,7 @@ const LandingPage = () => {
           <div className="relative">
             <div className="rounded-full bg-care-teal/20 w-64 h-64 absolute -top-10 -right-10 z-0"></div>
             <img 
-              src="/lovable-uploads/253ff09f-7389-40a7-bee2-f3a525984802.png" 
+              src={LandingImage}
               alt="Idosa sendo atendida por médico" 
               className="relative z-10 rounded-lg shadow-xl max-w-full"
             />
