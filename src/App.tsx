@@ -16,10 +16,6 @@ import EmergencyContactsPage from "./pages/EmergencyContactsPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotificationsPage from "./pages/NotificationsPage";
 import NotFound from "./pages/NotFound";
-import { BrowserRouter as Router } from "react-router-dom";
-
-const routerBaseName = process.env.PUBLIC_URL;
-
 
 const queryClient = new QueryClient();
 
