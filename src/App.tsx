@@ -26,10 +26,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/care-idosos-connect/" element={<LandingPage />} />
-          <Route path="/care-idosos-connect/login" element={<LoginPage />} />
-          <Route path="/care-idosos-connect/signup" element={<SignupPage />} />
-          <Route path="/care-idosos-connect/dashboard" element={<Layout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/dashboard" element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="medications" element={<MedicationsPage />} />
             <Route path="appointments" element={<AppointmentsPage />} />
