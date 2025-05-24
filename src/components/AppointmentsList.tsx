@@ -247,7 +247,17 @@ const AppointmentsList: React.FC<AppointmentsListProps> = ({ appointments, onUpd
                 
                 <div className="flex items-center">
                   <Clock className="h-5 w-5 text-care-purple mr-2" />
-                  <p className="text-senior">{format(new Date(`2000-01-01T${appointment.time}`), 'HH:mm', { locale: ptBR })}</p>
+                  <p className="text-senior">
+                    {(() => {
+                      const timeStr = appointment.time?.padStart(5, '0'); // força formato HH:mm
+                      const fullTime = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+                      const dateObj = new Date(`2000-01-01T${fullTime}`);
+
+                      return isNaN(dateObj.getTime())
+                        ? 'Horário inválido'
+                        : format(dateObj, 'HH:mm', { locale: ptBR });
+                    })()}
+                  </p>
                 </div>
                 
                 <div className="flex items-start">

@@ -44,24 +44,24 @@ const LoginPage = () => {
     setIsLoading(true);
     
     try {
-      // Validação básica
       if (!credentials.email || !credentials.password) {
         toast.error("Por favor, preencha todos os campos");
         return;
       }
-
-      axios.post('https://elderly-care.onrender.com/user/login', credentials).then(response=>{
-        if (response.data) {
-          localStorage.setItem('authToken', response.data);
-          toast.success("Login realizado com sucesso!");
-          navigate('/dashboard');
-        } else {
-          toast.error("Erro ao realizar login. Verifique suas credenciais.");
-        }
-      })
-
+    
+      const response = await axios.post('https://elderly-care.onrender.com/user/login', credentials);
+    
+      if (response.data) {
+        localStorage.setItem('authToken', response.data);
+        toast.success("Login realizado com sucesso!");
+        navigate('/dashboard');
+      } else {
+        toast.error("Erro ao realizar login. Verifique suas credenciais.");
+      }
+    
     } catch (error) {
       console.error("Erro no login:", error);
+      toast.error("Erro ao se conectar ao servidor.");
     } finally {
       setIsLoading(false);
     }

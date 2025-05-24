@@ -9,6 +9,8 @@ import AppointmentScheduler from '@/components/AppointmentScheduler';
 import { Appointment, getAppointments, confirmAppointment } from '@/utils/appointmentUtils';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { format } from 'date-fns';
+
 const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
@@ -46,34 +48,68 @@ const AppointmentsPage = () => {
     
       const appointments = response.data;
       setAppointments(appointments);
-      console.log(appointments)
-      const now = new Date();
-    
-      function parseDateTime(dateStr, timeStr) {
-        let [day, month, year] = [null, null, null];
       
-        if (dateStr.includes('/')) {
-          // Formato dd/MM/yyyy
-          [day, month, year] = dateStr.split('/');
-        } else if (dateStr.includes('-')) {
-          // Formato yyyy-MM-dd
-          [year, month, day] = dateStr.split('-');
+      const now = new Date();
+
+      function parseDateTime(dateStr: string, timeStr: string): Date {
+        try {
+          if (!dateStr || !timeStr) throw new Error("Data ou hora ausente");
+      
+          let [day, month, year] = [null, null, null];
+      
+          if (dateStr.includes('/')) {
+            [day, month, year] = dateStr.split('/');
+          } else if (dateStr.includes('-')) {
+            [year, month, day] = dateStr.split('-');
+          } else {
+            throw new Error("Formato de data inválido");
+          }
+      
+          // Normaliza a hora para HH:mm
+          let [hour, minute] = timeStr.split(':');
+          hour = hour.padStart(2, '0');
+          minute = minute.padStart(2, '0');
+      
+          const isoString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour}:${minute}:00`;
+          const parsed = new Date(isoString);
+      
+          if (isNaN(parsed.getTime())) throw new Error("Data inválida");
+      
+          return parsed;
+        } catch (err) {
+          console.error("Erro ao processar data/hora:", { dateStr, timeStr, err });
+          return new Date("Invalid Date");
+        }
+      }
+
+      appointments.forEach(app => {
+        const date = parseDateTime(app.date, app.time);
+        console.log(app.id, '->', date.toString());
+      });
+      
+
+      // Garante precisão até os segundos e normaliza para comparação
+      const normalizedNow = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+      
+      const upcoming: Appointment[] = [];
+      const past: Appointment[] = [];
+      
+      appointments.forEach(app => {
+        const appointmentDate = parseDateTime(app.date, app.time);
+        if (isNaN(appointmentDate.getTime())) {
+          console.warn(`Data inválida para o agendamento ${app.id}`);
+          return; // ignora esse item
         }
       
-        // Monta a string ISO para garantir consistência
-        const isoString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timeStr}:00`;
-        return new Date(isoString);
-      }
-      
-      const upcoming = appointments.filter(app => {
-        const appointmentDate = parseDateTime(app.date, app.time);
-        return appointmentDate >= now;
+        if (appointmentDate.getTime() >= normalizedNow.getTime()) {
+          upcoming.push(app);
+        } else {
+          past.push(app);
+        }
       });
       
-      const past = appointments.filter(app => {
-        const appointmentDate = parseDateTime(app.date, app.time);
-        return appointmentDate < now;
-      });
+    
+      console.log(upcoming)
 
       setUpcomingAppointments(upcoming);
       setPastAppointments(past);
@@ -161,6 +197,7 @@ const AppointmentsPage = () => {
         </TabsList>
 
         <TabsContent value="upcoming" className="mt-0">
+          
           <AppointmentsList
             appointments={upcomingAppointments}
             onUpdate={loadAppointments}

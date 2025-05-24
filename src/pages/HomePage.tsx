@@ -13,7 +13,7 @@ import axios from 'axios';
 const HomePage = () => {
   // Sample user data
   const user = {
-    name: "Maria Silva",
+    name: "",
   };
   
   const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
@@ -114,7 +114,7 @@ const HomePage = () => {
         </div>
         <div className="ml-4">
           <h1 className="text-2xl sm:text-3xl font-bold">Olá, {user.name}</h1>
-          <p className="text-gray-500 text-senior">Bem-vinda ao Care Idosos</p>
+          <p className="text-gray-500 text-senior">Bem-vindo ao Care Idosos</p>
         </div>
       </div>
       
