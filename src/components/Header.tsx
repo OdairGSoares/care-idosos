@@ -36,7 +36,7 @@ const Header = () => {
         {
           token: userToken,
           info: {
-            firstName: "Júlio",
+            firstName: "",
           }
         }
       )
