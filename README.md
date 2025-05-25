@@ -1,73 +1,176 @@
-# Welcome to your Lovable project
 
-## Project info
+<h1 align="center">
+    <br>
+    <p align="center" style="font-weight: bold;"><img src="./imagens/LOGO-CI.png" width="10%" height="10%"/> CARE IDOSOS - PI </p>
+</h1>
 
-**URL**: https://lovable.dev/projects/2da790e1-8b68-4347-90cf-942d20688fd0
+<h1>
+    <p style="font-weight: bold;">🧠 Contexto</p>
+</h1>
 
-## How can I edit this code?
+O objetivo foi criar um aplicativo de serviços essenciais aos idosos.
 
-There are several ways of editing your application.
+- 🎯 [Objetivo do Projeto](#Objetivo-do-Projeto)
+- ⚙️ [Funcionalidades](#funcionalidades)
+- 📁 [Arquitetura](#Arquitetura)
+- 🔗 [Link do Projeto](#Link-do-Projeto)
+- 📊 [Der (Diagrama Entidade-Relacionamento)](#der-diagrama-entidade-relacionamento)
+- 💻 [Como rodar o projeto](#Como-rodar-o-projeto)
+- 🎨 [Layout](#Layout)
+- 🛠️ [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- 👨‍💻 [Colaboradores do Projeto](#colaboradores-do-projeto)
+- 📝 [Licença](#licença)
 
-**Use Lovable**
+<h1>
+    <br>
+    <p style="font-weight: bold;">🎯 Objetivo do Projeto</p>
+</h1>
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2da790e1-8b68-4347-90cf-942d20688fd0) and start prompting.
+O objetivo principal do projeto é oferecer um conjunto de serviços essenciais aos idosos, disponíveis 24 horas por dia. Esses serviços abrangem o gerenciamento de **consultas médicas**, **contatos de emergência**, **administração horário das medicações**, entre outros. A plataforma busca aprimorar a qualidade de vida dos idosos, assegurando acesso rápido, fácil e contínuo a cuidados de saúde e suporte sempre que necessário.
 
-Changes made via Lovable will be committed automatically to this repo.
+<h1>
+  <br>
+    <p style="font-weight: bold;">⚙️ Funcionalidades</p>
+</h1>
 
-**Use your preferred IDE**
+- Acessar a lista de serviços;
+- Cadastrar, atualizar e deletar contatos;
+- Agendar consultas médicas com profissionais de saúde;
+- Solicitar exames e visualizar resultados;
+- Acessar contatos de emergência com instituições de saúde e familiares;
+- Obter suporte técnico especializado para dispositivos e tecnologias usadas pelos idosos;
+- Administração horário das medicações.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+<h1>
+  <br>
+    <p style="font-weight: bold;">📁 Arquitetura  </p>
+</h1>
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+📁 Senac-PI
+   |-  📁 video
+   |-  📁 backend
+   |-  📁 imagens
+   |-  📁 public
+   |-  📁 src
+   |    |
+   |    |- 📁 Assents
+   |    |- 📁 components
+   |    |- 📁 hooks
+   |    |- 📁 lib
+   |    |- 📁 pages
+   |    |- 📁 utils
+   |    |- 📑 App.css
+   |    |- 📑 App.tsx
+   |    |- 📑 index.css
+   |    |- 📑 main.tsx
+   |    |- 📑 vite-env.d.ts
+   |
+   |
+   |- 📑 .gitignore
+   |- 📑 DER-PI-SENAC.png
+   |- 📑 README.md
+   |- 📑 bun.lockb
+   |- 📑 components.json
+   |- 📑 eslint.config.js
+   |- 📑 index.html
+   |- 📑 package-lock.json
+   |- 📑 package.json
+   |- 📑 postcss.config.js
+   |- 📑 tailwind.config.ts
+   |- 📑 tsconfig.app.json
+   |- 📑 tsconfig.json
+   |- 📑 tsconfig.node.json
+   |- 📑 vite.config.ts
 ```
 
-**Edit a file directly in GitHub**
+<h1>
+    <br>
+    <p style="font-weight: bold;">🔗 Links do projeto</p>
+</h1>
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- [Apresentação do projeto - Vídeo](https://youtu.be/g-Kt0c2nNKU?si=CGySjsQp_n3XtCV9)
+- [GitHub Pages - Deploy](https://odairgsoares.github.io/care-idosos/)
+- [Care Idosos Backend- Github](https://github.com/Biiars00/elderly-care)
 
-**Use GitHub Codespaces**
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+<h1>
+    <br>
+    <p style="font-weight: bold;">✍️ Der (Diagrama Entidade-Relacionamento)</p>
+</h1>
 
-## What technologies are used for this project?
+![DER](DER-PI-SENAC.png)
 
-This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+<h1>
+    <br>
+    <p style="font-weight: bold;">💻 Como rodar o projeto localmente</p>
+</h1>
 
-## How can I deploy this project?
+Antes de começar, você precisará ter os seguintes softwares instalados:
 
-Simply open [Lovable](https://lovable.dev/projects/2da790e1-8b68-4347-90cf-942d20688fd0) and click on Share -> Publish.
+- Node.js (v18 ou superior)
+- npm (gerenciador de pacotes do Node.js)
+- vovable (Framework)
 
-## Can I connect a custom domain to my Lovable project?
+| Passo     | Comando/informação       |
+| --------- | ----------- |
+| Faça o fork  | `botão de forkar` |
+| Faça o clone  | `git clone` |
+| Instale as dependências   | `npm i` |
+| utilize o script de dev    | `npm dev` |
 
-Yes it is!
+<h1>
+    <br>
+    <p style="font-weight: bold;">🎨 Layout</p>
+</h1>
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+<p align="center">
+<img src="./imagens/CARE1.png" width="70%" height="25%"/>
+</p>
+<p align="center">
+<img src="./imagens/CARE2.png" width="70%" height="25%"/>
+</p>
+<p align="center">
+<img src="./imagens/CARE3.png" width="70%" height="25%"/>
+</p>
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+<h1>
+    <p style=" font-weight: bold;">🛠️ Tecnologias Utilizadas</p>
+</h1>
+
+- **Vite** 
+- **TypeScript** 
+- **React** 
+- **shadcn-ui** 
+- **Tailwind CSS** 
+- **Node.js** 
+- **TypeScript** 
+- **Express.js** 
+- **Firebase**
+- **Tsoa** 
+
+<h1>
+    <p style=" font-weight: bold;">👨‍💻 Colaboradores do Projeto</p>
+</h1>
+
+- BEATRIZ RIBEIRO DOS SANTOS
+- ELISABETE ALVES DOS SANTOS
+- KARENN SOUZA BUENO DE AZEVEDO
+- KELVEN MARTINS DA ROSA
+- KEVIN LOGAN GOMES PIRES
+- MARLU PATROCINIO RAMOS DA SILVA
+- ODAIR GOMES SOARES
+
+<h1>
+    <p style=" font-weight: bold;">📝 Licença</p>
+</h1>
+
+Este projeto está licenciado sob a [MIT License](./LICENSE.txt).
+
+
+<h3>
+  <a href='#top'>🔝 Voltar para o topo.</a>
+</h3>
+
+### Feito com 💕 e muita dedicação
