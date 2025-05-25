@@ -15,7 +15,7 @@ O objetivo foi criar um aplicativo de serviços essenciais aos idosos.
 - 📁 [Arquitetura](#Arquitetura)
 - 🔗 [Link do Projeto](#Link-do-Projeto)
 - 📊 [Der (Diagrama Entidade-Relacionamento)](#der-diagrama-entidade-relacionamento)
-- 💻 [Como rodar o projeto](#Como-rodar-o-projeto)
+- 💻 [Como rodar o projeto localmente](#Como-rodar-o-projeto-localmente)
 - 🎨 [Layout](#Layout)
 - 🛠️ [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - 👨‍💻 [Colaboradores do Projeto](#colaboradores-do-projeto)
