@@ -50,6 +50,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IUserToken": {
+        "dataType": "refObject",
+        "properties": {
+            "userId": {"dataType":"string","required":true},
+            "token": {"dataType":"string","required":true},
+            "email": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IUserDataLogin": {
         "dataType": "refObject",
         "properties": {
@@ -577,7 +587,7 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args: argsLocationController_getLocationById, request, response });
 
-                const controller = container.resolve(LocationController);
+                 const controller = container.resolve(LocationController);
 
               await templateService.apiHandler({
                 methodName: 'getLocationById',
@@ -608,7 +618,7 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args: argsEmergencyContactsController_getEmergencyContacts, request, response });
 
-                const controller = container.resolve(EmergencyContactsController);
+                 const controller = container.resolve(EmergencyContactsController);
 
               await templateService.apiHandler({
                 methodName: 'getEmergencyContacts',
@@ -737,7 +747,7 @@ export function RegisterRoutes(app: Router) {
             try {
                 validatedArgs = templateService.getValidatedArgs({ args: argsEmergencyContactsController_removeEmergencyContact, request, response });
 
-                const controller = container.resolve(EmergencyContactsController);
+               const controller = container.resolve(EmergencyContactsController);
 
               await templateService.apiHandler({
                 methodName: 'removeEmergencyContact',

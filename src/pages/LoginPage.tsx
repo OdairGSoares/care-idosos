@@ -52,7 +52,9 @@ const LoginPage = () => {
       const response = await axios.post('https://elderly-care.onrender.com/user/login', credentials);
     
       if (response.data) {
-        localStorage.setItem('authToken', response.data);
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('userId', response.data.userId);
+        
         toast.success("Login realizado com sucesso!");
         navigate('/dashboard');
       } else {

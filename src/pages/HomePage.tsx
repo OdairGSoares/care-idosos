@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -11,21 +10,49 @@ import { toast } from 'sonner';
 import axios from 'axios';
 
 const HomePage = () => {
-  // Sample user data
-  const user = {
-    name: "",
-  };
+
   
+type Usuario = {
+  token: string | null;
+  info: {
+    firstName: string;
+  };
+} | null;
+
   const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Fetch the next appointment on component mount
+  const [usuario, setUsuario] = useState<Usuario>(null);
+
   useEffect(() => {
-    loadAppointments();
+    const fetchUser = async () => {
+      const authToken = localStorage.getItem('authToken');
+      const userId = localStorage.getItem('userId');
+
+      const userInfo = await axios.get(`https://elderly-care.onrender.com/user/${userId}`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `${authToken}`
+        }
+      });
+
+      console.log(userInfo)
+
+      setUsuario(
+        {
+          token: authToken,
+          info: {
+            firstName: userInfo.data.userFirstName,
+          }
+        }
+      )
+    };
+
+    fetchUser();
+    loadData();
   }, []);
-  
-  const loadAppointments = async () => {
-    const authToken = localStorage.getItem('authToken');
+
+  const loadData = async () => {
+    const authToken = usuario.token
   
     if (!authToken) {
       toast.error('Token não encontrado.');
@@ -90,7 +117,7 @@ const HomePage = () => {
       
       if (success) {
         toast.success("Presença confirmada com sucesso!");
-        await loadAppointments(); // Refresh appointment data
+        await loadData(); // Refresh appointment data
       } else {
         toast.error("Erro ao confirmar presença. Tente novamente.");
       }
@@ -113,7 +140,9 @@ const HomePage = () => {
           <User className="h-8 w-8" />
         </div>
         <div className="ml-4">
-          <h1 className="text-2xl sm:text-3xl font-bold">Olá, {user.name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">
+            Olá, {usuario?.info?.firstName || 'Usuário'}
+          </h1>
           <p className="text-gray-500 text-senior">Bem-vindo ao Care Idosos</p>
         </div>
       </div>

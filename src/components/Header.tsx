@@ -20,23 +20,22 @@ const Header = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userToken = localStorage.getItem('authToken');
+      const authToken = localStorage.getItem('authToken');
+      const userId = localStorage.getItem('userId');
 
-      console.log(userToken)
-/*
-      const userInfo = await axios.get(`https://elderly-care.onrender.com/user/${userToken}`, {
+      const userInfo = await axios.get(`https://elderly-care.onrender.com/user/${userId}`, {
         withCredentials: true,
         headers: {
-          Authorization: `${userToken}`
+          Authorization: `${authToken}`
         }
       });
-*/
+
 
       setUsuario(
         {
-          token: userToken,
+          token: authToken,
           info: {
-            firstName: "",
+            firstName: userInfo.data.userFirstName,
           }
         }
       )
@@ -48,6 +47,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
     setUsuario(null);
     toast.success("Logout realizado com sucesso!");
     navigate('/');

@@ -12,6 +12,12 @@ export interface IUserDataLogin {
     password: string,
 };
 
+export interface IUserToken {
+    userId: string,
+    token: string,
+    email: string,
+};
+
 export interface IUserDataCheck {
     userId: string,
     email: string,
@@ -39,7 +45,7 @@ interface IUserFromDBRepository {
   addUserFromDB(
     data: IUserDataWithoutUserId
   ): Promise<IUserData>;
-  getUsersFromDB(): Promise<IUserData[]>;
+  getUsersFromDB(): Promise<IUserDataWithoutPassword[]>;
   getUserByIdFromDB(userId: string): Promise<IUserDataWithoutPassword>;
   getUserCheckFromDB(data: IUserDataLogin): Promise<IUserDataCheck>;
 }

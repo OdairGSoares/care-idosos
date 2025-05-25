@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { Body, Get, Path, Post, Route, Security, Tags } from 'tsoa';
-import { IUserData, IUserDataLogin, IUserDataWithoutPassword, IUserDataWithoutUserId } from '../../interfaces/repositories/userFromDB.interface';
+import { IUserData, IUserDataLogin, IUserDataWithoutPassword, IUserDataWithoutUserId, IUserToken } from '../../interfaces/repositories/userFromDB.interface';
 import UserService from '../../services/user/user.service';
 
 @injectable()
@@ -36,7 +36,7 @@ class UserController {
   }
 
   @Post('/login')
-  async loginUser(@Body() body: IUserDataLogin): Promise<string> {
+  async loginUser(@Body() body: IUserDataLogin): Promise<IUserToken> {
     const { email, password } = body;
 
     try {
@@ -60,7 +60,7 @@ class UserController {
   }
 
   @Get('/')
-  async getUsers(): Promise<IUserData[]> {
+  async getUsers(): Promise<IUserDataWithoutPassword[]> {
     try {
       const response = await this.userService.getUsers();
 

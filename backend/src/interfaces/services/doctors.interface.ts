@@ -1,4 +1,4 @@
-import { IDoctorsData } from "../repositories/doctorsFromDB.interface";
+import { IDoctorsData } from "../../interfaces/repositories/doctorsFromDB.interface";
 
 interface IDoctorService {
   getDoctors(): Promise<IDoctorsData[]>;

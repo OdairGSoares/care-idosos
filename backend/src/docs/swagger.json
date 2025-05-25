@@ -23,6 +23,9 @@
 					},
 					"email": {
 						"type": "string"
+					},
+					"password": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -36,7 +39,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_IUserData.Exclude_keyofIUserData.userId__": {
+			"IUserDataWithoutUserId": {
 				"properties": {
 					"userFirstName": {
 						"type": "string"
@@ -62,13 +65,29 @@
 					"password"
 				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
+				"additionalProperties": false
 			},
-			"Omit_IUserData.userId_": {
-				"$ref": "#/components/schemas/Pick_IUserData.Exclude_keyofIUserData.userId__",
-				"description": "Construct a type with the properties of T except for those in type K."
+			"IUserToken": {
+				"properties": {
+					"userId": {
+						"type": "string"
+					},
+					"token": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"userId",
+					"token",
+					"email"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
-			"Partial_IUserData_": {
+			"IUserDataLogin": {
 				"properties": {
 					"email": {
 						"type": "string"
@@ -77,10 +96,14 @@
 						"type": "string"
 					}
 				},
+				"required": [
+					"email",
+					"password"
+				],
 				"type": "object",
-				"description": "Make all properties in T optional"
+				"additionalProperties": false
 			},
-			"Pick_IUserData.Exclude_keyofIUserData.password__": {
+			"IUserDataWithoutPassword": {
 				"properties": {
 					"userId": {
 						"type": "string"
@@ -106,11 +129,7 @@
 					"email"
 				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IUserData.password_": {
-				"$ref": "#/components/schemas/Pick_IUserData.Exclude_keyofIUserData.password__",
-				"description": "Construct a type with the properties of T except for those in type K."
+				"additionalProperties": false
 			},
 			"IMedicationsData": {
 				"properties": {
@@ -137,7 +156,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_IMedicationsData.Exclude_keyofIMedicationsData.id__": {
+			"IMedicationsDataWithoutId": {
 				"properties": {
 					"name": {
 						"type": "string"
@@ -156,43 +175,7 @@
 					"time"
 				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IMedicationsData.id_": {
-				"$ref": "#/components/schemas/Pick_IMedicationsData.Exclude_keyofIMedicationsData.id__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"Pick_IResetMedicationsData.Exclude_keyofIResetMedicationsData.taken__": {
-				"properties": {
-					"reminder": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"reminder"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IResetMedicationsData.taken_": {
-				"$ref": "#/components/schemas/Pick_IResetMedicationsData.Exclude_keyofIResetMedicationsData.taken__",
-				"description": "Construct a type with the properties of T except for those in type K."
-			},
-			"Pick_IResetMedicationsData.Exclude_keyofIResetMedicationsData.reminder__": {
-				"properties": {
-					"taken": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"taken"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IResetMedicationsData.reminder_": {
-				"$ref": "#/components/schemas/Pick_IResetMedicationsData.Exclude_keyofIResetMedicationsData.reminder__",
-				"description": "Construct a type with the properties of T except for those in type K."
+				"additionalProperties": false
 			},
 			"ILocationData": {
 				"properties": {
@@ -246,12 +229,12 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_IContactsData.Exclude_keyofIContactsData.id__": {
+			"IContactsDataWithoutId": {
 				"properties": {
-					"phone": {
+					"name": {
 						"type": "string"
 					},
-					"name": {
+					"phone": {
 						"type": "string"
 					},
 					"relationship": {
@@ -262,17 +245,13 @@
 					}
 				},
 				"required": [
-					"phone",
 					"name",
+					"phone",
 					"relationship",
 					"isMainContact"
 				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IContactsData.id_": {
-				"$ref": "#/components/schemas/Pick_IContactsData.Exclude_keyofIContactsData.id__",
-				"description": "Construct a type with the properties of T except for those in type K."
+				"additionalProperties": false
 			},
 			"IDoctorsData": {
 				"properties": {
@@ -333,14 +312,8 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_IAppointmentScheduleData.Exclude_keyofIAppointmentScheduleData.id__": {
+			"IAppointmentData": {
 				"properties": {
-					"userId": {
-						"type": "string"
-					},
-					"time": {
-						"type": "string"
-					},
 					"doctorId": {
 						"type": "string"
 					},
@@ -350,24 +323,22 @@
 					"date": {
 						"type": "string"
 					},
+					"time": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"userId",
-					"time",
 					"doctorId",
 					"locationId",
 					"date",
+					"time",
 					"createdAt"
 				],
 				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"Omit_IAppointmentScheduleData.id_": {
-				"$ref": "#/components/schemas/Pick_IAppointmentScheduleData.Exclude_keyofIAppointmentScheduleData.id__",
-				"description": "Construct a type with the properties of T except for those in type K."
+				"additionalProperties": false
 			},
 			"IConfirmScheduleData": {
 				"properties": {
@@ -427,7 +398,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IUserData.userId_"
+								"$ref": "#/components/schemas/IUserDataWithoutUserId"
 							}
 						}
 					}
@@ -443,7 +414,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"$ref": "#/components/schemas/IUserToken"
 								}
 							}
 						}
@@ -459,7 +430,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Partial_IUserData_"
+								"$ref": "#/components/schemas/IUserDataLogin"
 							}
 						}
 					}
@@ -476,7 +447,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/IUserData"
+										"$ref": "#/components/schemas/IUserDataWithoutPassword"
 									},
 									"type": "array"
 								}
@@ -500,7 +471,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/Omit_IUserData.password_"
+									"$ref": "#/components/schemas/IUserDataWithoutPassword"
 								}
 							}
 						}
@@ -578,7 +549,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IMedicationsData.id_"
+								"$ref": "#/components/schemas/IMedicationsDataWithoutId"
 							}
 						}
 					}
@@ -691,7 +662,15 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IResetMedicationsData.taken_"
+								"properties": {
+									"reminder": {
+										"type": "boolean"
+									}
+								},
+								"required": [
+									"reminder"
+								],
+								"type": "object"
 							}
 						}
 					}
@@ -736,7 +715,15 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IResetMedicationsData.reminder_"
+								"properties": {
+									"taken": {
+										"type": "boolean"
+									}
+								},
+								"required": [
+									"taken"
+								],
+								"type": "object"
 							}
 						}
 					}
@@ -889,7 +876,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IContactsData.id_"
+								"$ref": "#/components/schemas/IContactsDataWithoutId"
 							}
 						}
 					}
@@ -967,7 +954,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IContactsData.id_"
+								"$ref": "#/components/schemas/IContactsDataWithoutId"
 							}
 						}
 					}
@@ -1127,7 +1114,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IAppointmentScheduleData.id_"
+								"$ref": "#/components/schemas/IAppointmentData"
 							}
 						}
 					}
@@ -1205,7 +1192,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/Omit_IAppointmentScheduleData.id_"
+								"$ref": "#/components/schemas/IAppointmentData"
 							}
 						}
 					}
@@ -1293,12 +1280,7 @@
 	},
 	"servers": [
 		{
-			"url": "https://elderly-care.onrender.com",
-			"description": "Produção"
-		},
-		{
-			"url": "https://localhost:3000",
-			"description": "Produção"
+			"url": "/"
 		}
 	]
 }

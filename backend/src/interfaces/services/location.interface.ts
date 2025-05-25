@@ -1,4 +1,4 @@
-import { ILocationData } from "../repositories/locationFromDB.interface";
+import { ILocationData } from "../../interfaces/repositories/locationFromDB.interface";
 
 interface ILocationService {
   getLocations(): Promise<ILocationData[]>;

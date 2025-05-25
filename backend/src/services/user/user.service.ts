@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import IUserService from '../../interfaces/services/user.interface';
-import IUserFromDBRepository, { IUserData, IUserDataLogin, IUserDataWithoutPassword, IUserDataWithoutUserId } from '../../interfaces/repositories/userFromDB.interface';
+import IUserFromDBRepository, { IUserData, IUserDataLogin, IUserDataWithoutPassword, IUserDataWithoutUserId, IUserToken } from '../../interfaces/repositories/userFromDB.interface';
 import { generateToken } from '../../middlewares/jwtAuthentication';
 
 @injectable()
@@ -25,7 +25,7 @@ async addUser(
 
   async loginUser(
     data: IUserDataLogin
-  ): Promise<string> {
+  ): Promise<IUserToken> {
     let accessToken = "";
 
     const responseDB = await this.userFromDBRepository.getUserCheckFromDB(data);
@@ -49,10 +49,14 @@ async addUser(
       throw new Error("Invalid credentials!");
     }
 
-    return accessToken;
+    return {
+      userId: responseDB.userId,
+      email: responseDB.email,
+      token: accessToken,
+    };
   }
 
-  async getUsers(): Promise<IUserData[]> {
+  async getUsers(): Promise<IUserDataWithoutPassword[]> {
     const responseDB =
       await this.userFromDBRepository.getUsersFromDB();
 
@@ -60,7 +64,19 @@ async addUser(
       throw new Error('Data not found!');
     }
 
-    return responseDB;
+    const data = responseDB.map((user) => {
+      const userData = {
+        userId: user.userId,
+        userFirstName: user.userFirstName,
+        userLastName: user.userLastName,
+        phone: user.phone,
+        email: user.email
+      }
+      
+      return userData;
+    })
+
+    return data;
   }
 
   async getUserById(userId: string): Promise<IUserDataWithoutPassword> {
@@ -73,7 +89,15 @@ async addUser(
       throw new Error('Data not found!');
     }
 
-    return responseDB;
+    const data = {
+      userId: responseDB.userId,
+      userFirstName: responseDB.userFirstName,
+      userLastName: responseDB.userLastName,
+      phone: responseDB.phone,
+      email: responseDB.email
+    }
+
+    return data;
   }
 }
 

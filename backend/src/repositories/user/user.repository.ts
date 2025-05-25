@@ -37,12 +37,11 @@ class UserFromDBRepository
     };
   }
 
-  async getUsersFromDB(): Promise<IUserData[]> {
+  async getUsersFromDB(): Promise<IUserDataWithoutPassword[]> {
     const refDB = await this.db.get();
 
     const usersList = refDB.docs.map((doc) => {
       const docData = doc.data() as IUserData;
-
 
       if (docData) {
         return { ...docData, password: docData.password };

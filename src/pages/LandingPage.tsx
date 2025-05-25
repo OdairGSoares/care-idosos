@@ -99,7 +99,7 @@ const LandingPage = () => {
                 </p>
               </div>
             </div>
-            <Button variant="outline" className="text-white border-white hover:bg-white/20">
+            <Button variant="outline" className="text-purple-900 border-white hover:bg-white/20">
               Ver Horários <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -163,7 +163,7 @@ const LandingPage = () => {
               </div>
             </div>
             
-            <Button size="lg" className="w-full bg-white text-care-teal hover:bg-white/80 text-senior">
+            <Button size="lg" className="w-full bg-white text-green-600 hover:text-white text-care-teal hover:bg-white/80 ">
               Agendar Consulta
             </Button>
           </div>
