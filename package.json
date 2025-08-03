@@ -2,6 +2,7 @@
   "name": "care-idosos",
   "private": true,
   "version": "1.0.0",
+  "packageManager": "npm@10.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
