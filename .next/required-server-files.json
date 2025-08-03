@@ -290,16 +290,6 @@
     "configFileName": "next.config.js",
     "turbopack": {
       "root": "D:\\Arquivos\\Portifólio\\Programação\\care-idosos"
-    },
-    "_originalRewrites": {
-      "beforeFiles": [],
-      "afterFiles": [
-        {
-          "source": "/user/:path*",
-          "destination": "/api/users/:path*"
-        }
-      ],
-      "fallback": []
     }
   },
   "appDir": "D:\\Arquivos\\Portifólio\\Programação\\care-idosos",

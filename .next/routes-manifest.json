@@ -15,13 +15,7 @@
   "headers": [],
   "rewrites": {
     "beforeFiles": [],
-    "afterFiles": [
-      {
-        "source": "/user/:path*",
-        "destination": "/api/users/:path*",
-        "regex": "^/user(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
-      }
-    ],
+    "afterFiles": [],
     "fallback": []
   },
   "dynamicRoutes": [
