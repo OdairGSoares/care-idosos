@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Phone, AlertCircle } from 'lucide-react';
 import { 
   Dialog,
@@ -16,12 +16,16 @@ const EmergencyButton = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [isEmergencyActive, setIsEmergencyActive] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleEmergencyClick = () => {
     setIsDialogOpen(true);
   };
 
-  const handleConfirmEmergency = () => {
+  const handleConfirmEmergency = useCallback(() => {
+    if (isProcessing) return; // Evitar chamadas duplicadas
+    
+    setIsProcessing(true);
     setIsDialogOpen(false);
     setIsEmergencyActive(true);
     toast.success("Serviço de emergência acionado", {
@@ -30,30 +34,32 @@ const EmergencyButton = () => {
     
     // In a real app, this would connect to an emergency service API
     console.log("Emergency service activated");
-  };
+  }, [isProcessing]);
 
   const handleCancelEmergency = () => {
     setIsDialogOpen(false);
+    setIsProcessing(false);
   };
 
   React.useEffect(() => {
     let timer: number;
-    if (isDialogOpen && countdown > 0) {
+    if (isDialogOpen && countdown > 0 && !isProcessing) {
       timer = window.setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
-    } else if (countdown === 0) {
+    } else if (countdown === 0 && !isProcessing) {
       handleConfirmEmergency();
     }
     
     return () => {
       clearTimeout(timer);
     };
-  }, [isDialogOpen, countdown]);
+  }, [isDialogOpen, countdown, isProcessing, handleConfirmEmergency]);
 
   React.useEffect(() => {
     if (!isDialogOpen) {
       setCountdown(5);
+      setIsProcessing(false);
     }
   }, [isDialogOpen]);
 
@@ -96,6 +102,7 @@ const EmergencyButton = () => {
             <Button 
               onClick={handleConfirmEmergency} 
               className="bg-care-emergency hover:bg-red-600 text-white"
+              disabled={isProcessing}
             >
               Confirmar Emergência
             </Button>

@@ -41,6 +41,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
           richColors 
           theme="light"
           closeButton
+          toastOptions={{
+            duration: 4000,
+          }}
         />
         {children}
       </TooltipProvider>

@@ -96,7 +96,7 @@ const SignupPage = () => {
     try {
       const result = await signUpMutation.mutateAsync(formData);
       if (result) {
-        toast.success("Cadastro realizado com sucesso!");
+        // Toast já é chamado no UserService, não precisa chamar aqui
         router.push('/login');
       }
     } catch (error) {

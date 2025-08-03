@@ -41,7 +41,7 @@ const LoginPage = () => {
     try {
       const result = await loginMutation.mutateAsync(credentials);
       if (result) {
-        toast.success("Login realizado com sucesso!");
+        // Toast já é chamado no UserService, não precisa chamar aqui
         router.push('/dashboard');
       }
     } catch (error) {

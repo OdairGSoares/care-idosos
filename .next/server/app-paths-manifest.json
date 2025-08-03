@@ -1,3 +1,10 @@
 {
-  "/page": "app/page.js"
+  "/api/users/login/route": "app/api/users/login/route.js",
+  "/api/users/[id]/route": "app/api/users/[id]/route.js",
+  "/api/appointments/route": "app/api/appointments/route.js",
+  "/api/medications/route": "app/api/medications/route.js",
+  "/api/users/[id]/location-permission/route": "app/api/users/[id]/location-permission/route.js",
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
