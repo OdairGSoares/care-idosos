@@ -6,8 +6,8 @@
   "/api/doctors/route": "app/api/doctors/route.js",
   "/api/emergency-contacts/[id]/route": "app/api/emergency-contacts/[id]/route.js",
   "/api/emergency-contacts/route": "app/api/emergency-contacts/route.js",
-  "/api/health-data/route": "app/api/health-data/route.js",
   "/api/health-data/[id]/route": "app/api/health-data/[id]/route.js",
+  "/api/health-data/route": "app/api/health-data/route.js",
   "/api/locations/route": "app/api/locations/route.js",
   "/api/medications/[id]/route": "app/api/medications/[id]/route.js",
   "/api/medications/reset/route": "app/api/medications/reset/route.js",
@@ -22,10 +22,10 @@
   "/dashboard/appointments/page": "app/dashboard/appointments/page.js",
   "/dashboard/emergency-contacts/page": "app/dashboard/emergency-contacts/page.js",
   "/dashboard/notifications/page": "app/dashboard/notifications/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/medications/page": "app/dashboard/medications/page.js",
   "/dashboard/profile/page": "app/dashboard/profile/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/login/page": "app/login/page.js",
   "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
   "/signup/page": "app/signup/page.js"
 }

@@ -6,8 +6,8 @@
   "/api/doctors/route": "/api/doctors",
   "/api/emergency-contacts/[id]/route": "/api/emergency-contacts/[id]",
   "/api/emergency-contacts/route": "/api/emergency-contacts",
-  "/api/health-data/route": "/api/health-data",
   "/api/health-data/[id]/route": "/api/health-data/[id]",
+  "/api/health-data/route": "/api/health-data",
   "/api/locations/route": "/api/locations",
   "/api/medications/[id]/route": "/api/medications/[id]",
   "/api/medications/reset/route": "/api/medications/reset",
@@ -22,10 +22,10 @@
   "/dashboard/appointments/page": "/dashboard/appointments",
   "/dashboard/emergency-contacts/page": "/dashboard/emergency-contacts",
   "/dashboard/notifications/page": "/dashboard/notifications",
+  "/dashboard/page": "/dashboard",
   "/dashboard/medications/page": "/dashboard/medications",
   "/dashboard/profile/page": "/dashboard/profile",
-  "/dashboard/page": "/dashboard",
-  "/login/page": "/login",
   "/page": "/",
+  "/login/page": "/login",
   "/signup/page": "/signup"
 }
