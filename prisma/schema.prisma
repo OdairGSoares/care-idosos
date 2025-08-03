@@ -1,0 +1,135 @@
+// Schema Prisma para Care Idosos
+// Baseado na estrutura do backend Firebase/Firestore
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Tabela de usuários
+model User {
+  id                String @id @default(cuid())
+  userFirstName     String
+  userLastName      String
+  phone             String
+  email             String @unique
+  password          String
+  locationPermission Boolean @default(false) // Permissão para compartilhar localização
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relacionamentos
+  medications        Medication[]
+  appointments       Appointment[]
+  emergencyContacts  EmergencyContact[]
+  healthData         HealthData[]
+
+  @@map("users")
+}
+
+// Tabela de medicamentos
+model Medication {
+  id       String  @id @default(cuid())
+  name     String
+  dosage   Float
+  time     String
+  reminder Boolean @default(false)
+  taken    Boolean @default(false)
+  userId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamento com usuário
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("medications")
+}
+
+// Tabela de dados de saúde
+model HealthData {
+  id             String @id @default(cuid())
+  type           String // 'bloodPressure', 'heartRate', 'glucose', 'weight', 'temperature'
+  value          Float  // Valor principal (sistólica, batimentos, glicose, peso, temperatura)
+  secondaryValue Float? // Valor secundário (diastólica para pressão arterial)
+  date           String // Data da medição no formato YYYY-MM-DD
+  notes          String? // Observações opcionais
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relacionamento com usuário
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("health_data")
+}
+
+// Tabela de médicos (dados globais)
+model Doctor {
+  id        String  @id @default(cuid())
+  name      String
+  specialty String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  appointments Appointment[]
+
+  @@map("doctors")
+}
+
+// Tabela de localizações/clínicas (dados globais)
+model Location {
+  id      String @id @default(cuid())
+  name    String
+  address String
+  city    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  appointments Appointment[]
+
+  @@map("locations")
+}
+
+// Tabela de agendamentos
+model Appointment {
+  id         String   @id @default(cuid())
+  date       String   // Mantendo como String para compatibilidade
+  time       String
+  confirmed  Boolean  @default(false)
+  userId     String
+  doctorId   String
+  locationId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relacionamentos
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  doctor   Doctor   @relation(fields: [doctorId], references: [id])
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@map("appointments")
+}
+
+// Tabela de contatos de emergência
+model EmergencyContact {
+  id            String  @id @default(cuid())
+  name          String
+  phone         String
+  relationship  String
+  isMainContact Boolean @default(false)
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamento com usuário
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("emergency_contacts")
+} 

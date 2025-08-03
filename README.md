@@ -1,176 +1,547 @@
+# 🏥 Care Idosos - Sistema Completo de Cuidados
 
-<h1 align="center">
-    <br>
-    <p align="center" style="font-weight: bold;"><img src="./imagens/LOGO-CI.png" width="10%" height="10%"/> CARE IDOSOS - PI </p>
-</h1>
+<div align="center">
+  <img src="./imagens/LOGO-CI.png" width="120" height="120" alt="Care Idosos Logo"/>
+  
+  ### Sistema completo de cuidados para idosos com tecnologia moderna
+  
+  [![React](https://img.shields.io/badge/React-18.0-blue?logo=react)](https://reactjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+  [![Prisma](https://img.shields.io/badge/Prisma-5.0-black?logo=prisma)](https://www.prisma.io/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)](https://www.postgresql.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+  [![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://vercel.com/)
+</div>
 
-<h1>
-    <p style="font-weight: bold;">🧠 Contexto</p>
-</h1>
+---
 
-O objetivo foi criar um aplicativo de serviços essenciais aos idosos.
+## 📋 Índice
 
-- 🎯 [Objetivo do Projeto](#Objetivo-do-Projeto)
-- ⚙️ [Funcionalidades](#funcionalidades)
-- 📁 [Arquitetura](#Arquitetura)
-- 🔗 [Link do Projeto](#Link-do-Projeto)
-- 📊 [Der (Diagrama Entidade-Relacionamento)](#der-diagrama-entidade-relacionamento)
-- 💻 [Como rodar o projeto localmente](#Como-rodar-o-projeto-localmente)
-- 🎨 [Layout](#Layout)
-- 🛠️ [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- 👨‍💻 [Colaboradores do Projeto](#colaboradores-do-projeto)
-- 📝 [Licença](#licença)
+- [🎯 Sobre o Projeto](#-sobre-o-projeto)
+- [🚀 Funcionalidades](#-funcionalidades)
+- [🛠️ Tecnologias](#️-tecnologias)
+- [📁 Arquitetura](#-arquitetura)
+- [💻 Como Executar](#-como-executar)
+- [🗄️ Banco de Dados](#️-banco-de-dados)
+- [🔐 Autenticação](#-autenticação)
+- [📱 Interface](#-interface)
+- [🚀 Deploy](#-deploy)
+- [👥 Colaboradores](#-colaboradores)
+- [📄 Licença](#-licença)
 
-<h1>
-    <br>
-    <p style="font-weight: bold;">🎯 Objetivo do Projeto</p>
-</h1>
+---
 
-O objetivo principal do projeto é oferecer um conjunto de serviços essenciais aos idosos, disponíveis 24 horas por dia. Esses serviços abrangem o gerenciamento de **consultas médicas**, **contatos de emergência**, **administração horário das medicações**, entre outros. A plataforma busca aprimorar a qualidade de vida dos idosos, assegurando acesso rápido, fácil e contínuo a cuidados de saúde e suporte sempre que necessário.
+## 🎯 Sobre o Projeto
 
-<h1>
-  <br>
-    <p style="font-weight: bold;">⚙️ Funcionalidades</p>
-</h1>
+O **Care Idosos** é uma plataforma completa desenvolvida para oferecer serviços essenciais aos idosos, disponível 24 horas por dia. O sistema busca aprimorar a qualidade de vida dos idosos, assegurando acesso rápido, fácil e contínuo a cuidados de saúde e suporte sempre que necessário.
 
-- Acessar a lista de serviços;
-- Cadastrar, atualizar e deletar contatos;
-- Agendar consultas médicas com profissionais de saúde;
-- Solicitar exames e visualizar resultados;
-- Acessar contatos de emergência com instituições de saúde e familiares;
-- Obter suporte técnico especializado para dispositivos e tecnologias usadas pelos idosos;
-- Administração horário das medicações.
+### 🎯 Objetivos Principais
 
-<h1>
-  <br>
-    <p style="font-weight: bold;">📁 Arquitetura  </p>
-</h1>
+- ✅ **Gerenciamento de Consultas Médicas**: Agendamento e acompanhamento
+- ✅ **Administração de Medicamentos**: Controle de horários e lembretes
+- ✅ **Contatos de Emergência**: Acesso rápido a familiares e serviços
+- ✅ **Interface Intuitiva**: Design adaptado para idosos
+- ✅ **Segurança**: Autenticação JWT e dados protegidos
+
+---
+
+## 🚀 Funcionalidades
+
+### 🔐 **Autenticação e Segurança**
+- Cadastro e login de usuários
+- Autenticação JWT segura
+- Proteção de rotas
+- Gerenciamento de sessão
+
+### 💊 **Gerenciamento de Medicamentos**
+- ✅ Cadastrar medicamentos com horários
+- ✅ Controle de status (tomado/não tomado)
+- ✅ Sistema de lembretes
+- ✅ Reset diário automático
+- ✅ Histórico de medicamentos
+
+### 📅 **Agendamento de Consultas**
+- ✅ Agendar consultas médicas
+- ✅ Seleção de médicos e especialidades
+- ✅ Escolha de clínicas e localizações
+- ✅ Confirmação de presença
+- ✅ Histórico de consultas
+
+### 🚨 **Contatos de Emergência**
+- ✅ Cadastrar contatos importantes
+- ✅ Definir contato principal
+- ✅ Categorização por relacionamento
+- ✅ Acesso rápido em emergências
+
+### 👨‍⚕️ **Médicos e Clínicas**
+- ✅ Listagem de médicos por especialidade
+- ✅ Informações de clínicas
+- ✅ Busca por localização
+- ✅ Dados de contato
+
+### 📱 **Interface Responsiva**
+- ✅ Design mobile-first
+- ✅ Acessibilidade para idosos
+- ✅ Navegação intuitiva
+- ✅ Feedback visual claro
+
+---
+
+## 🛠️ Tecnologias
+
+### **Frontend**
+- **React 18** - Biblioteca JavaScript para interfaces
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool e servidor de desenvolvimento
+- **Tailwind CSS** - Framework CSS utilitário
+- **shadcn/ui** - Componentes de interface
+- **React Router** - Roteamento
+- **TanStack Query** - Gerenciamento de estado
+- **Sonner** - Sistema de notificações
+
+### **Backend & Database**
+- **Prisma ORM** - ORM moderno para TypeScript
+- **PostgreSQL** - Banco de dados relacional
+- **JWT** - Autenticação baseada em tokens
+- **bcryptjs** - Hash de senhas
+- **Vercel** - Deploy e hosting
+
+### **Ferramentas de Desenvolvimento**
+- **ESLint** - Linting de código
+- **Prettier** - Formatação de código
+- **Git** - Controle de versão
+
+---
+
+## 📁 Arquitetura
 
 ```
-📁 Senac-PI
-   |-  📁 video
-   |-  📁 backend
-   |-  📁 imagens
-   |-  📁 public
-   |-  📁 src
-   |    |
-   |    |- 📁 Assents
-   |    |- 📁 components
-   |    |- 📁 hooks
-   |    |- 📁 lib
-   |    |- 📁 pages
-   |    |- 📁 utils
-   |    |- 📑 App.css
-   |    |- 📑 App.tsx
-   |    |- 📑 index.css
-   |    |- 📑 main.tsx
-   |    |- 📑 vite-env.d.ts
-   |
-   |
-   |- 📑 .gitignore
-   |- 📑 DER-PI-SENAC.png
-   |- 📑 README.md
-   |- 📑 bun.lockb
-   |- 📑 components.json
-   |- 📑 eslint.config.js
-   |- 📑 index.html
-   |- 📑 package-lock.json
-   |- 📑 package.json
-   |- 📑 postcss.config.js
-   |- 📑 tailwind.config.ts
-   |- 📑 tsconfig.app.json
-   |- 📑 tsconfig.json
-   |- 📑 tsconfig.node.json
-   |- 📑 vite.config.ts
+care-idosos/
+├── 📁 app/                    # Aplicação Next.js
+│   ├── 📁 api/               # Rotas da API
+│   │   ├── 📁 appointments/  # Endpoints de agendamentos
+│   │   ├── 📁 medications/   # Endpoints de medicamentos
+│   │   ├── 📁 users/         # Endpoints de usuários
+│   │   └── 📁 emergency-contacts/ # Endpoints de contatos
+│   ├── 📁 components/        # Componentes React
+│   │   ├── 📁 ui/           # Componentes de interface
+│   │   └── ...              # Componentes específicos
+│   ├── 📁 pages/            # Páginas da aplicação
+│   ├── 📁 services/         # Serviços da API
+│   │   └── 📁 prisma/       # Serviços Prisma ORM
+│   ├── 📁 hooks/            # Hooks personalizados
+│   ├── 📁 types/            # Tipos TypeScript
+│   └── 📁 utils/            # Utilitários
+├── 📁 prisma/               # Configuração Prisma
+│   ├── 📄 schema.prisma     # Schema do banco
+│   ├── 📁 migrations/       # Migrações do banco
+│   └── 📄 seed.ts          # Dados de exemplo
+├── 📁 public/              # Arquivos estáticos
+├── 📁 imagens/             # Imagens do projeto
+└── 📄 README.md            # Documentação
 ```
 
-<h1>
-    <br>
-    <p style="font-weight: bold;">🔗 Links do projeto</p>
-</h1>
+---
 
-- [Apresentação do projeto - Vídeo](https://youtu.be/g-Kt0c2nNKU?si=CGySjsQp_n3XtCV9)
-- [GitHub Pages - Deploy](https://odairgsoares.github.io/care-idosos/)
-- [Care Idosos Backend- Github](https://github.com/Biiars00/elderly-care)
+## 💻 Como Executar
 
+### **Pré-requisitos**
+- Node.js 18+ 
+- npm ou yarn
+- PostgreSQL (local ou na nuvem)
 
-<h1>
-    <br>
-    <p style="font-weight: bold;">✍️ Der (Diagrama Entidade-Relacionamento)</p>
-</h1>
+### **1. Clone o Repositório**
+```bash
+git clone https://github.com/seu-usuario/care-idosos.git
+cd care-idosos
+```
 
-![DER](DER-PI-SENAC.png)
+### **2. Instale as Dependências**
+```bash
+npm install
+```
 
+### **3. Configure as Variáveis de Ambiente**
 
-<h1>
-    <br>
-    <p style="font-weight: bold;">💻 Como rodar o projeto localmente</p>
-</h1>
+Crie um arquivo `.env.local` na raiz do projeto:
 
-Antes de começar, você precisará ter os seguintes softwares instalados:
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/care_idosos?schema=public"
 
-- Node.js (v18 ou superior)
-- npm (gerenciador de pacotes do Node.js)
-- vovable (Framework)
+# JWT
+VITE_JWT_SECRET="seu-jwt-secret-super-seguro"
 
-| Passo     | Comando/informação       |
-| --------- | ----------- |
-| Faça o fork  | `botão de forkar` |
-| Faça o clone  | `git clone` |
-| Instale as dependências   | `npm i` |
-| utilize o script de dev    | `npm dev` |
+# API
+VITE_API_URL="http://localhost:3000/api"
+```
 
-<h1>
-    <br>
-    <p style="font-weight: bold;">🎨 Layout</p>
-</h1>
+### **4. Configure o Banco de Dados**
 
-<p align="center">
-<img src="./imagens/CARE1.png" width="70%" height="25%"/>
-</p>
-<p align="center">
-<img src="./imagens/CARE2.png" width="70%" height="25%"/>
-</p>
-<p align="center">
-<img src="./imagens/CARE3.png" width="70%" height="25%"/>
-</p>
+```bash
+# Gerar cliente Prisma
+npm run db:generate
 
-<h1>
-    <p style=" font-weight: bold;">🛠️ Tecnologias Utilizadas</p>
-</h1>
+# Executar migrações
+npm run db:migrate
 
-- **Vite** 
-- **TypeScript** 
-- **React** 
-- **shadcn-ui** 
-- **Tailwind CSS** 
-- **Node.js** 
-- **TypeScript** 
-- **Express.js** 
-- **Firebase**
-- **Tsoa** 
+# Popular banco com dados de exemplo
+npm run db:seed
 
-<h1>
-    <p style=" font-weight: bold;">👨‍💻 Colaboradores do Projeto</p>
-</h1>
+# (Opcional) Abrir Prisma Studio
+npm run db:studio
+```
 
-- BEATRIZ RIBEIRO DOS SANTOS
-- ELISABETE ALVES DOS SANTOS
-- KARENN SOUZA BUENO DE AZEVEDO
-- KELVEN MARTINS DA ROSA
-- KEVIN LOGAN GOMES PIRES
-- MARLU PATROCINIO RAMOS DA SILVA
-- ODAIR GOMES SOARES
+### **5. Execute o Projeto**
 
-<h1>
-    <p style=" font-weight: bold;">📝 Licença</p>
-</h1>
+```bash
+# Desenvolvimento
+npm run dev
 
-Este projeto está licenciado sob a [MIT License](./LICENSE.txt).
+# Build para produção
+npm run build
 
+# Preview do build
+npm run preview
+```
 
-<h3>
-  <a href='#top'>🔝 Voltar para o topo.</a>
-</h3>
+### **6. Acesse a Aplicação**
 
-### Feito com 💕 e muita dedicação
+- **Frontend**: http://localhost:5173
+- **Prisma Studio**: http://localhost:5555
+
+---
+
+## 🗄️ Banco de Dados
+
+### **Schema Principal (Prisma)**
+
+```prisma
+// Usuários
+model User {
+  id            String @id @default(cuid())
+  userFirstName String
+  userLastName  String
+  phone         String
+  email         String @unique
+  password      String // Hash bcrypt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  medications       Medication[]
+  appointments      Appointment[]
+  emergencyContacts EmergencyContact[]
+}
+
+// Medicamentos
+model Medication {
+  id       String  @id @default(cuid())
+  name     String
+  dosage   Float
+  time     String
+  reminder Boolean @default(false)
+  taken    Boolean @default(false)
+  userId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Agendamentos
+model Appointment {
+  id         String   @id @default(cuid())
+  date       String
+  time       String
+  confirmed  Boolean  @default(false)
+  userId     String
+  doctorId   String
+  locationId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  doctor   Doctor   @relation(fields: [doctorId], references: [id])
+  location Location @relation(fields: [locationId], references: [id])
+}
+
+// Contatos de Emergência
+model EmergencyContact {
+  id            String @id @default(cuid())
+  name          String
+  phone         String
+  relationship  String
+  isMainContact Boolean @default(false)
+  userId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+```
+
+### **Scripts de Banco de Dados**
+
+```bash
+# Gerar cliente Prisma
+npm run db:generate
+
+# Push schema para DB (desenvolvimento)
+npm run db:push
+
+# Executar migrações (produção)
+npm run db:migrate
+
+# Popular com dados de exemplo
+npm run db:seed
+
+# Abrir Prisma Studio
+npm run db:studio
+
+# Reset do banco
+npm run db:reset
+```
+
+---
+
+## 🔐 Autenticação
+
+### **Sistema JWT**
+
+```typescript
+// Login
+const handleLogin = async (credentials: LoginData) => {
+  const response = await axios.post('/api/users/login', credentials);
+  const { token } = response.data;
+  
+  // Salvar token
+  localStorage.setItem('authToken', token);
+  localStorage.setItem('userId', response.data.userId);
+};
+
+// Verificar autenticação
+const isAuthenticated = () => {
+  const token = localStorage.getItem('authToken');
+  return !!token;
+};
+
+// Logout
+const handleLogout = () => {
+  localStorage.removeItem('authToken');
+  localStorage.removeItem('userId');
+  navigate('/login');
+};
+```
+
+### **Proteção de Rotas**
+
+```typescript
+// Componente ProtectedRoute
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = UserService.isLoggedIn();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+```
+
+---
+
+## 📱 Interface
+
+### **Design System**
+
+- **Cores**: Paleta personalizada para idosos
+- **Tipografia**: Fonte legível (Montserrat)
+- **Componentes**: shadcn/ui + Tailwind CSS
+- **Responsividade**: Mobile-first design
+
+### **Componentes Principais**
+
+```typescript
+// Exemplo de uso dos componentes
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+
+// Página de medicamentos
+function MedicationsPage() {
+  return (
+    <div className="container mx-auto px-4 py-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Meus Medicamentos</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Conteúdo */}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+```
+
+### **Responsividade**
+
+```css
+/* Breakpoints Tailwind */
+sm: 640px   /* Mobile */
+md: 768px   /* Tablet */
+lg: 1024px  /* Desktop */
+xl: 1280px  /* Large Desktop */
+```
+
+---
+
+## 🚀 Deploy
+
+### **Vercel (Recomendado)**
+
+1. **Conecte o Repositório**
+   ```bash
+   # Via Git
+   git push origin main
+   ```
+
+2. **Configure as Variáveis de Ambiente**
+   - `DATABASE_URL`: URL do PostgreSQL
+   - `VITE_JWT_SECRET`: Chave JWT
+   - `VITE_API_URL`: URL da API
+
+3. **Deploy Automático**
+   - Vercel detecta mudanças automaticamente
+   - Build e deploy automáticos
+
+### **Outras Opções**
+
+```bash
+# Build estático
+npm run build
+
+# Preview local
+npm run preview
+
+# Deploy manual
+npm run deploy
+```
+
+---
+
+## 📊 Endpoints da API
+
+### **Autenticação**
+```http
+POST /api/users/signup    # Cadastro
+POST /api/users/login     # Login
+GET  /api/users/:id       # Buscar usuário
+```
+
+### **Medicamentos**
+```http
+GET    /api/medications           # Listar
+POST   /api/medications           # Criar
+PUT    /api/medications/:id       # Atualizar
+DELETE /api/medications/:id       # Remover
+DELETE /api/medications/reset     # Resetar todos
+```
+
+### **Agendamentos**
+```http
+GET    /api/appointments          # Listar
+POST   /api/appointments          # Criar
+PUT    /api/appointments/:id      # Atualizar
+DELETE /api/appointments/:id      # Cancelar
+PUT    /api/appointments/confirmed/:id  # Confirmar
+```
+
+### **Contatos de Emergência**
+```http
+GET    /api/emergency-contacts    # Listar
+POST   /api/emergency-contacts    # Criar
+PUT    /api/emergency-contacts/:id # Atualizar
+DELETE /api/emergency-contacts/:id # Remover
+```
+
+### **Dados Globais**
+```http
+GET /api/doctors    # Listar médicos
+GET /api/locations  # Listar clínicas
+```
+
+---
+
+## 🧪 Testando
+
+### **Usuário de Teste**
+```
+Email: joao@teste.com
+Senha: 123456
+```
+
+### **Dados de Exemplo**
+O seed do banco cria:
+- 5 usuários de exemplo
+- 10 medicamentos
+- 8 agendamentos
+- 6 contatos de emergência
+- 15 médicos
+- 12 clínicas
+
+---
+
+## 👥 Colaboradores
+
+### **Equipe de Desenvolvimento**
+
+| Nome | Função | GitHub |
+|------|--------|--------|
+| **Beatriz Ribeiro dos Santos** | Desenvolvedora Frontend | [@beatriz-ribeiro](https://github.com/beatriz-ribeiro) |
+| **Elisabete Alves dos Santos** | Desenvolvedora Backend | [@elisabete-alves](https://github.com/elisabete-alves) |
+| **Karenn Souza Bueno de Azevedo** | Desenvolvedora Full Stack | [@karenn-souza](https://github.com/karenn-souza) |
+| **Kelven Martins da Rosa** | Desenvolvedor Frontend | [@kelven-martins](https://github.com/kelven-martins) |
+| **Kevin Logan Gomes Pires** | Desenvolvedor Backend | [@kevin-pires](https://github.com/kevin-pires) |
+| **Marlu Patrocinio Ramos da Silva** | Desenvolvedora UI/UX | [@marlu-ramos](https://github.com/marlu-ramos) |
+| **Odair Gomes Soares** | Desenvolvedor Full Stack | [@odair-soares](https://github.com/odair-soares) |
+
+### **Instituição**
+- **SENAC** - Serviço Nacional de Aprendizagem Comercial
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE.txt](./LICENSE.txt) para detalhes.
+
+---
+
+## 🤝 Contribuição
+
+1. **Fork** o projeto
+2. Crie sua **Feature Branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um **Pull Request**
+
+### **Padrões de Contribuição**
+
+- Use **TypeScript** para todo código novo
+- Siga os padrões do **ESLint** e **Prettier**
+- Adicione **testes** para novas funcionalidades
+- Documente mudanças na API
+- Mantenha a **responsividade** mobile-first
+
+---
+
+### **Care Idosos** - Sistema completo de cuidados para idosos
+
+**Desenvolvido com ❤️ para facilitar o cuidado com idosos**
+
+[![GitHub stars](https://img.shields.io/github/stars/seu-usuario/care-idosos?style=social)](https://github.com/seu-usuario/care-idosos)
+[![GitHub forks](https://img.shields.io/github/forks/seu-usuario/care-idosos?style=social)](https://github.com/seu-usuario/care-idosos)
+[![GitHub issues](https://img.shields.io/github/issues/seu-usuario/care-idosos)](https://github.com/seu-usuario/care-idosos/issues)
+
+</div>
