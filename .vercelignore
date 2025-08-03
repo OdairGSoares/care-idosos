@@ -34,5 +34,13 @@ pids
 # Coverage directory used by tools like istanbul
 coverage
 
-# Prisma
-prisma/migrations 
+# Prisma migrations (but keep schema)
+prisma/migrations
+
+# Git
+.git
+.gitignore
+
+# Cache
+.cache
+.parcel-cache 
