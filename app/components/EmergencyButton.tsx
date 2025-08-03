@@ -95,7 +95,7 @@ const EmergencyButton = () => {
             </Button>
             <Button 
               onClick={handleConfirmEmergency} 
-              className="bg-care-emergency hover:bg-red-600 text-senior"
+              className="bg-care-emergency hover:bg-red-600 text-white"
             >
               Confirmar Emergência
             </Button>
