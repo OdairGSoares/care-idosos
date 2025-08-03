@@ -267,7 +267,7 @@ const PrismaExample: React.FC = () => {
           </Button>
 
           <div className="space-y-2">
-            {appointments?.map((appointment) => (
+            {appointments?.map((appointment: any) => (
               <div key={appointment.id} className="p-3 border rounded">
                 <div>Data: {appointment.date} às {appointment.time}</div>
                 <div>Médico: {appointment.doctor?.doctorName}</div>

@@ -28,17 +28,17 @@ const NotificationsPage = () => {
         ]);
   
         const now = new Date();
-        const soonMedications = medRes.data.filter(med => {
+        const soonMedications = medRes.data.filter((med: any) => {
           const [h, m] = med.time.split(':');
           const medDate = new Date(now);
           medDate.setHours(+h, +m, 0, 0);
           const diff = (medDate.getTime() - now.getTime()) / (1000 * 60);
           return diff >= 0 && diff <= 60;
         });
-        const medNotes = soonMedications.map(m => `Medicamento "${m.name}" agendado para daqui a 1 hora ou menos.`);
+        const medNotes = soonMedications.map((m: any) => `Medicamento "${m.name}" agendado para daqui a 1 hora ou menos.`);
   
         const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-        const parseDateTime = (dateStr, timeStr) => {
+        const parseDateTime = (dateStr: string, timeStr: string) => {
           let day, month, year;
           if (dateStr.includes('/')) {
             [day, month, year] = dateStr.split('/');
@@ -47,7 +47,7 @@ const NotificationsPage = () => {
           }
           return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timeStr.padStart(5, '0')}:00`);
         };
-        const nearAppointments = appRes.data.filter(app => {
+        const nearAppointments = appRes.data.filter((app: any) => {
           try {
             const appointmentDate = parseDateTime(app.date, app.time);
             return appointmentDate.getTime() - now.getTime() <= threeDaysMs;
@@ -55,10 +55,10 @@ const NotificationsPage = () => {
             return false;
           }
         });
-        const appNotes = nearAppointments.map(app => `Consulta marcada para ${app.date} às ${app.time}.`);
+        const appNotes = nearAppointments.map((app: any) => `Consulta marcada para ${app.date} às ${app.time}.`);
   
         const allNotes = [...medNotes, ...appNotes];
-        setNotifications([...new Set(allNotes)]);
+        setNotifications(Array.from(new Set(allNotes)));
       } catch (err) {
         console.error('Erro ao carregar dados:', err);
       }

@@ -19,7 +19,7 @@ export class PrismaDoctorService {
         doctorId: doctor.id,
         doctorName: doctor.name,
         specialty: doctor.specialty,
-        image: doctor.image
+        image: doctor.image ?? undefined,
       }))
     } catch (error) {
       console.error('Erro ao buscar médicos:', error)
@@ -44,7 +44,7 @@ export class PrismaDoctorService {
         doctorId: doctor.id,
         doctorName: doctor.name,
         specialty: doctor.specialty,
-        image: doctor.image
+        image: doctor.image ?? undefined
       }
     } catch (error) {
       console.error('Erro ao buscar médico por ID:', error)
@@ -71,7 +71,7 @@ export class PrismaDoctorService {
         doctorId: doctor.id,
         doctorName: doctor.name,
         specialty: doctor.specialty,
-        image: doctor.image
+        image: doctor.image ?? undefined
       }))
     } catch (error) {
       console.error('Erro ao buscar médicos por especialidade:', error)
@@ -98,7 +98,7 @@ export class PrismaDoctorService {
         doctorId: doctor.id,
         doctorName: doctor.name,
         specialty: doctor.specialty,
-        image: doctor.image
+        image: doctor.image ?? undefined
       }))
     } catch (error) {
       console.error('Erro ao buscar médicos por nome:', error)
@@ -227,7 +227,7 @@ export class PrismaDoctorService {
         doctorId: doctor.id,
         doctorName: doctor.name,
         specialty: doctor.specialty,
-        image: doctor.image
+        image: doctor.image ?? undefined
       }))
     } catch (error) {
       console.error('Erro ao buscar médicos com agendamentos:', error)

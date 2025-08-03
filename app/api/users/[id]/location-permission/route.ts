@@ -27,7 +27,7 @@ function getUserIdFromRequest(request: NextRequest): string | null {
 }
 
 // Função para obter a permissão de localização do usuário
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     console.log('📍 [API] Verificando permissão de localização...');
     
@@ -40,8 +40,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
+    const { id } = await params;
+    
     // Verificar se o usuário está tentando acessar seus próprios dados
-    if (userId !== params.id) {
+    if (userId !== id) {
       console.log('❌ [API] Usuário tentando acessar dados de outro usuário');
       return NextResponse.json(
         { success: false, message: 'Acesso negado' },
@@ -84,7 +86,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // Função para atualizar a permissão de localização do usuário
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     console.log('📍 [API] Atualizando permissão de localização...');
     
@@ -97,8 +99,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
+    const { id } = await params;
+    
     // Verificar se o usuário está tentando acessar seus próprios dados
-    if (userId !== params.id) {
+    if (userId !== id) {
       console.log('❌ [API] Usuário tentando acessar dados de outro usuário');
       return NextResponse.json(
         { success: false, message: 'Acesso negado' },

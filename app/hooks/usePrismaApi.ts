@@ -339,7 +339,7 @@ export const usePrismaAppointments = () => {
   
   return useQuery({
     queryKey: PRISMA_QUERY_KEYS.APPOINTMENTS(userId),
-    queryFn: () => PrismaAppointmentService.getSchedule(userId),
+    queryFn: () => PrismaAppointmentService.getAppointments(userId),
     enabled: !!userId,
   });
 };
@@ -349,7 +349,7 @@ export const usePrismaAppointment = (id: string) => {
   
   return useQuery({
     queryKey: PRISMA_QUERY_KEYS.APPOINTMENT(id, userId),
-    queryFn: () => PrismaAppointmentService.getScheduleById(id, userId),
+    queryFn: () => PrismaAppointmentService.getAppointmentById(id, userId),
     enabled: !!id && !!userId,
   });
 };
@@ -369,7 +369,7 @@ export const usePrismaPastAppointments = () => {
   
   return useQuery({
     queryKey: PRISMA_QUERY_KEYS.PAST_APPOINTMENTS(userId),
-    queryFn: () => PrismaAppointmentService.getPastAppointments(userId),
+    queryFn: () => PrismaAppointmentService.getAppointments(userId),
     enabled: !!userId,
   });
 };
@@ -380,7 +380,13 @@ export const usePrismaAddAppointment = () => {
   
   return useMutation({
     mutationFn: (appointment: IAppointmentData) => 
-      PrismaAppointmentService.addSchedule(appointment, userId),
+      PrismaAppointmentService.createAppointment({
+        date: appointment.date,
+        time: appointment.time,
+        doctorId: appointment.doctorId,
+        locationId: appointment.locationId,
+        userId: userId
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.APPOINTMENTS(userId) });
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.UPCOMING_APPOINTMENTS(userId) });
@@ -398,7 +404,13 @@ export const usePrismaUpdateAppointment = () => {
   
   return useMutation({
     mutationFn: ({ id, appointment }: { id: string; appointment: IAppointmentData }) =>
-      PrismaAppointmentService.updateSchedule(id, appointment, userId),
+      PrismaAppointmentService.updateAppointment(id, {
+        date: appointment.date,
+        time: appointment.time,
+        doctorId: appointment.doctorId,
+        locationId: appointment.locationId,
+        confirmed: appointment.confirmed
+      }, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.APPOINTMENTS(userId) });
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.UPCOMING_APPOINTMENTS(userId) });
@@ -416,7 +428,7 @@ export const usePrismaRemoveAppointment = () => {
   const userId = getCurrentUserId();
   
   return useMutation({
-    mutationFn: (id: string) => PrismaAppointmentService.removeSchedule(id, userId),
+    mutationFn: (id: string) => PrismaAppointmentService.deleteAppointment(id, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.APPOINTMENTS(userId) });
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.UPCOMING_APPOINTMENTS(userId) });
@@ -435,7 +447,7 @@ export const usePrismaConfirmAppointment = () => {
   
   return useMutation({
     mutationFn: ({ id, confirmData }: { id: string; confirmData: IConfirmScheduleData }) =>
-      PrismaAppointmentService.confirmSchedule(id, confirmData, userId),
+      PrismaAppointmentService.confirmAppointment(id, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.APPOINTMENTS(userId) });
       queryClient.invalidateQueries({ queryKey: PRISMA_QUERY_KEYS.UPCOMING_APPOINTMENTS(userId) });

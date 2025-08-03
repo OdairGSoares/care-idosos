@@ -51,7 +51,7 @@ export class DoctorService {
     const doctors = await this.getDoctors();
     if (!doctors) return null;
     
-    const specialties = [...new Set(doctors.map(doctor => doctor.specialty))];
+    const specialties = Array.from(new Set(doctors.map(doctor => doctor.specialty)));
     return specialties.sort();
   }
 } 

@@ -41,11 +41,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           richColors 
           theme="light"
           closeButton
-          preventDuplicates
-          toastOptions={{
-            // Evitar duplicação de toasts
-            id: (toast) => toast.id,
-          }}
         />
         {children}
       </TooltipProvider>
