@@ -20,7 +20,14 @@ const nextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': './app',
+      '@': require('path').resolve(__dirname, './app'),
+      '@/components': require('path').resolve(__dirname, './app/components'),
+      '@/lib': require('path').resolve(__dirname, './app/lib'),
+      '@/types': require('path').resolve(__dirname, './app/types'),
+      '@/hooks': require('path').resolve(__dirname, './app/hooks'),
+      '@/services': require('path').resolve(__dirname, './app/services'),
+      '@/utils': require('path').resolve(__dirname, './app/utils'),
+      '@/pages': require('path').resolve(__dirname, './app/pages'),
     };
     return config;
   },
